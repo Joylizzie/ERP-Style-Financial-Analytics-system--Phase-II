@@ -1,0 +1,7 @@
+company_code,product_id,cat_id,product_name,product_unit_name,product_units,product_unit_price,currency_id
+US001,1,H,server,piece,1,250000,1
+US001,2,S,vizwise,piece,1,3000000,1
+US001,3,P,vizwise_online,per_user_per_year,1,1500,1
+US001,4,P,smarteroffice_online,per_user_per_year,1,100,1
+US001,5,S,smarteroffice,piece,1,1200,1
+US001,6,C,consulting,hourly,1,500,1

@@ -1,0 +1,5 @@
+company_code,cat_id,cat_name,subcat_id,subcat_name
+US001,H,hard_ware,1,server
+US001,S,soft_ware,1,one_off_payement
+US001,P,soft_ware,2,annual_subscribe
+US001,C,consulting,1,one_off_payment

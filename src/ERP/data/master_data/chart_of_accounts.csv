@@ -1,0 +1,31 @@
+company_code,general_ledger_number,general_ledger_name,coacat_id,sub_coacat_id,bs_pl_index,currency_id
+US001,100001,Checking account,1,1,1,1
+US001,100002,Saving account,1,1,1,1
+US001,101001,Inventory,1,1,2,1
+US001,102001,Account receivables,1,1,3,1
+US001,103001,Prepaid expenses,1,1,4,1
+US001,104001,Property plant equipment,1,2,11,1
+US001,104002,Accumulated depreciation,1,2,12,1
+US001,105001,Other assets,1,2,15,1
+US001,200001,Account payables,2,3,20,1
+US001,201001,Accrued expenses,2,3,21,1
+US001,202001,Unearned revenue,2,3,22,1
+US001,203001,Tax payable,2,3,23,1
+US001,204001,Other payables,2,3,29,1
+US001,205001,Long term debit,2,4,30,1
+US001,206001,Other long term liabilities,2,4,35,1
+US001,301001,Equity capital,3,5,40,1
+US001,302002,Retained earnings,3,6,41,1
+US001,501001,Revenue,5,7,50,1
+US001,502001,Cost of goods sold,5,8,55,1
+US001,601001,Research development,6,9,60,1
+US001,601100,Travel,6,9,61,1
+US001,602001,Advertising,6,9,62,1
+US001,603001,Rental,6,9,63,1
+US001,603002,Unitilities,6,9,64,1
+US001,604001,Wages,6,9,65,1
+US001,605001,Office supplies,6,9,66,1
+US001,606001,Depreciation,6,9,67,1
+US001,607001,Insurance,6,9,68,1
+US001,608001,Other expense,6,9,69,1
+US001,609001,Interest expense,6,9,70,1
