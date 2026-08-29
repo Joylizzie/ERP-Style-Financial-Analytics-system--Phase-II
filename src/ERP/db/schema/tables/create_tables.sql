@@ -57,7 +57,7 @@ create table if not exists companies (
 	, updated_at TIMESTAMPTZ DEFAULT NOW()
     );
 
---Functional currency of Parent company is different than it's subsidaries when they run in differnet jurisdiction.
+--Functional currency of Parent company is different than its subsidaries when they run in differnet jurisdiction.
 create table if not exists currencies(
     company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
     currency_id serial primary key,
@@ -110,7 +110,6 @@ create table if not exists fiscal_periods(
     period_id serial PRIMARY key NOT NULL,
     fiscal_year integer NOT NULL CHECK (fiscal_year BETWEEN 2000 AND 9999),
     fiscal_month integer NOT NULL CHECK (fiscal_month BETWEEN 1 AND 12),
-	period_name TEXT NOT NULL UNIQUE,
     start_date date unique NOT NULL default ('2021-03-01')::date, -- default will be overwritten by trigger
     end_date date unique NOT NULL default ('2021-03-31')::date  -- default will be overwritten by trigger
 

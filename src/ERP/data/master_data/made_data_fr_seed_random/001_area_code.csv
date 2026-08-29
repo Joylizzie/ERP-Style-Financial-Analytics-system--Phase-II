@@ -1,4 +1,4 @@
-zip,Zipcode name,City,State,County Name,area
+zip,Zipcode_`:waname,City,State,County Name,area
 98520,"ABERDEEN, WA",ABERDEEN,WA,GRAYS HARBOR,OY
 98220,"ACME, WA",ACME,WA,WHATCOM,SE
 99101,"ADDY, WA",ADDY,WA,STEVENS,SP
