@@ -13,6 +13,7 @@ cp data/product_categories.csv /tmp
 cp data/products.csv /tmp
 cp data/profit_centres.csv /tmp
 cp data/cost_centres.csv /tmp
+
 cp data/tax.csv /tmp
 cp data/wbs.csv /tmp
 cp data/area_code.csv /tmp

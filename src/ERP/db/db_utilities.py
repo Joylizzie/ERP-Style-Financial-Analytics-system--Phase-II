@@ -20,6 +20,7 @@ def connection_pool(host, port, dbname, user, min_size=2, max_size=10, pgpass_pa
     except Exception as e:
         logger.error(f"Failed to initialize connection pool for {user}@{host}: {e}")
 
+
  # TO create a new db and its onwer, need postgres db and postgres as user
 def run_sql(user, dbname, sql_queries, autocommit=False):
     conn = psycopg.connect(host="localhost", port="5432", dbname=dbname, user=user)
@@ -45,6 +46,7 @@ def run_sql_file_autocommit(pool:ConnectionPool, file_path, filename):
         conn.autocommit = True
         with conn.cursor() as cur:
             cur.execute(sql)
+            
     except: 
         logger.error
         conn.close()
@@ -68,10 +70,10 @@ def run_sql_file(pool:ConnectionPool, file_path, filename):
     logger.info(f'Executed sql in {file_path/filename}')
 
 def run_psql_file(user:str, dbname:str, file_path:Path, file_name:Path):
+    """Using psql to upload file to Postgres"""
     file_path_name = f'{file_path/file_name}'
     logger.info(file_path_name)
     command = shlex.split(f'psql --host=localhost -U {user}  --dbname={dbname} -a -f {file_path_name}')
-    # command = ["psql", "--host", "localhost", "--port", "5432",  "-U", user, "-d", dbname, "-a", "-f", file_path_name]
 
     # Run the command
     result = subprocess.run(command, capture_output=True, text=True)
@@ -83,6 +85,7 @@ def run_psql_file(user:str, dbname:str, file_path:Path, file_name:Path):
         logger.error("psql is not able to connect:", result.stderr)
 
 def get_copy_sql(path_file_name:Path):
+    """Based on legacy file which copies table vaules to Postgres, retrieve table name and rewrite copy command"""
     table_name = path_file_name.stem[4:]
     with open(path_file_name, "r", encoding="utf-8") as file:
         col_str = file.readline().strip()
@@ -90,6 +93,7 @@ def get_copy_sql(path_file_name:Path):
     return [table_name, sql_str]
 
 def copy_file_db(pool:ConnectionPool, path_file_name:Path):
+    """Copy a file to Postgres with a pool of connections"""
     table_name, copy_sql = get_copy_sql(path_file_name)
 
     try:
@@ -109,6 +113,7 @@ def copy_file_db(pool:ConnectionPool, path_file_name:Path):
         raise e
 
 def copy_folder_db(pool:ConnectionPool, folder_path:Path):
+    """ Copy files in a folder to Postgres"""
     files = sorted(folder_path.glob("*.csv"))
     for file in files:
         copy_file_db(pool, file)
