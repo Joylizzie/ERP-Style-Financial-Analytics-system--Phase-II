@@ -216,3 +216,5 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+src/ERP/data/master_data/made_data_fr_seed_random/

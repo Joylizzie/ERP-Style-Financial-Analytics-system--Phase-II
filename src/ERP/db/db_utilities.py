@@ -3,6 +3,7 @@ import logging
 import psycopg
 from psycopg_pool import ConnectionPool
 from pathlib import Path
+import gzip
 import shlex
 import subprocess
 
@@ -92,16 +93,20 @@ def get_copy_sql(path_file_name:Path):
     sql_str = f"COPY {table_name}({col_str}) FROM STDIN WITH DELIMITER ',' CSV HEADER;"
     return [table_name, sql_str]
 
-def copy_file_db(pool:ConnectionPool, path_file_name:Path):
+def copy_file_to_db(pool:ConnectionPool, path_file_name:Path):
     """Copy a file to Postgres with a pool of connections"""
     table_name, copy_sql = get_copy_sql(path_file_name)
 
     try:
         logger.info(f"Processing file '{path_file_name}' into table '{table_name}'")
-            
-        with pool.connection() as conn:
-            with conn.cursor() as cur:
-                with open(path_file_name, "r", encoding="utf-8") as f:
+        if path_file_name.name.endswith(".gz"):
+            file_context = gzip.open(path_file_name, "r", encoding="utf-8")
+        else:
+            file_context = open(path_file_name, "r", encoding="utf-8")    
+
+        with file_context as f:
+            with pool.connection() as conn:
+                with conn.cursor() as cur:
                     with cur.copy(copy_sql) as copy:
                         while chunk := f.read(65536):
                             copy.write(chunk)
@@ -116,4 +121,29 @@ def copy_folder_db(pool:ConnectionPool, folder_path:Path):
     """ Copy files in a folder to Postgres"""
     files = sorted(folder_path.glob("*.csv"))
     for file in files:
-        copy_file_db(pool, file)
+        copy_file_to_db(pool, file)
+
+def copy_from_db_file(pool:ConnectionPool, path_file_name:Path, sql_query:str):
+    """Downloads data from the database using COPY TO STDOUT and writes it to a file using Connectionpool."""
+
+    try:
+        # Rule applied: Open the file first
+        if path_file_name.name.endswith(".gz"):
+            file_context = gzip.open(path_file_name, "wb")
+        else:
+            file_context = open(path_file_name, "wb")
+
+        with file_context as f:    
+            logger.info(f'Opened file {path_file_name} and opening connection to query db')
+            with pool.connection() as conn:
+                with conn.cursor() as cur:
+                    copy_statement = f"COPY ({sql_query.rstrip(';')}) TO STDOUT WITH CSV HEADER"
+                    with cur.copy(copy_statement) as copy:
+                        for chunk in copy:
+                            f.write(chunk)
+                                
+        logger.info(f"Successfully downloaded {path_file_name}")
+            
+    except Exception as e:
+        logger.error(f"Error occurring during copy {path_file_name}: {e}")
+        raise e
