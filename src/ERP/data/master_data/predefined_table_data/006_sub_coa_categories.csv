@@ -1,0 +1,10 @@
+sub_coacat_id,sub_coacat_name,coacat_id
+1,Current assets,1
+2,Non-Current assets,1
+3,Current libilities,2
+4,Non-Current liabilities,2
+5,Equity capital,3
+6,Retained earnings,3
+7,Revenue,5
+8,Cost of goods sold,5
+9,Expenses,6

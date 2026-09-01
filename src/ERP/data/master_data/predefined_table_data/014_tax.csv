@@ -1,0 +1,2 @@
+"company_code","tax_code","tax_name","tax_rate","tax_area","tax_belongto","description"
+"US001",1,"sales_tax",0.1000,"US_Seattle","state","pec_of_sales"
