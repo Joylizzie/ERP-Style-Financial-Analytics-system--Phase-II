@@ -307,7 +307,10 @@ create table if not exists customer_names (
 	company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
 	customer_id char(6) primary key check (customer_id ~ '[A-Z]{3}[0-9]{3}' ),
     business_type_id integer not null,
-	customer_name varchar(250),
+	firstname varchar(60),
+	surname varchar(60), 
+	--   -- Automatically combines them with a comma in between
+    -- customer_name VARCHAR(121) GENERATED ALWAYS AS (surname || ',' || firstname) STORED,
 	general_ledger_number integer default 102001,
     currency_id integer not null    
 	, created_at TIMESTAMPTZ DEFAULT NOW()
