@@ -67,7 +67,7 @@ def make_random_firstnames(num):
 
 def make_random_email_domains(num):
     """Pull randomly (weighted by column weight) num rows with specified cols - domain from input file"""
-    input_file = seed_data_folder/"first_names.csv"
+    input_file = seed_data_folder/"email_domains.csv"
     col_lst = ['domain']
     rows, weights = get_random_data_from_seed(input_file, col_lst, weight_col="weight")
     # random_email_domains = random.choices(rows, weights=weights, k=num)
@@ -80,7 +80,7 @@ def random_string(char_lst, n):
 
 def make_phone_numbers(num):
     for _ in range(num):
-        yield f"{random.randomrange(100, 999)}-{random.randrange(1000,9999)}"
+        yield f"{random.randrange(100, 999)}-{random.randrange(1000,9999)}"
 
 def make_random_surnames_gen(num):
     """Pull randomly (weighted by column weight) num rows with specified cols - surname  from input file"""

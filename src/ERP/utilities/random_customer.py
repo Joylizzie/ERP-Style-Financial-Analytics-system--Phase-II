@@ -57,17 +57,18 @@ def make_customer_names(n):
 
 
 def make_customer_addresses(input_path_file_name):
-    """Add address, phone, email to db existing customers from seed data"""
+    """Add address, phone, email to db existing customers from seed data;
+    Calculates file_rows automatically from the input file."""
     with open(input_path_file_name, 'r') as file:
-        n = sum(1 for line in file) - 1 # subtract 1 for header row. Find how many customer_ids without address
+        file_rows = sum(1 for line in file) - 1 # subtract 1 for header row. Find how many customer_ids without address
 
-    city_gen = make_random_cities(n)
-    phone_num_gen = make_phone_numbers(num = n)
-    street_address_gen = make_random_streets(n)
-    emails_domain_gen = make_random_email_domains(n)
+    city_gen = make_random_cities(file_rows)
+    phone_num_gen = make_phone_numbers(num=file_rows)
+    street_address_gen = make_random_streets(file_rows)
+    emails_domain_gen = make_random_email_domains(file_rows)
     customer_name_file_gen = read_csv_row_generator(input_path_file_name)
 
-    for _ in range(n):
+    for _ in range(file_rows):
         row = next(customer_name_file_gen) # row a dictionary
         customer_id, firstname, surname = row['customer_id'], row['firstname'], row['surname']
         row = next(city_gen)
@@ -77,7 +78,7 @@ def make_customer_addresses(input_path_file_name):
         email_domain = next(emails_domain_gen)['domain']
         street_num = random.randrange(1, 999)
         phone_number = f"{area_code}-{phone_7}"
-        email_address = f"{firstname[0:5]}_{surname}[0:7]@{email_domain}".lower()
+        email_address = f"{firstname[0:5]}_{surname[0:7]}@{email_domain}".lower()
 
         ret = {'company_code': 'US001'
                , 'customer_id': customer_id

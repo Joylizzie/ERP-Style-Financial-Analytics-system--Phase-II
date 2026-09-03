@@ -29,8 +29,8 @@ def main():
     create_csv(make_customer_names, path_file_out/'010_customer_names.csv', 200)
     copy_file_to_db(ocean_pool, path_file_out/"010_customer_names.csv")
     sql_query = "select customer_id, firstname, surname from customer_names where customer_id not in (select customer_id from customer_addresses)"
-    copy_from_db_file(ocean_pool, path_file_out/"011_customer_id_without_addresses.csv", sql_query)
-    create_csv(make_customer_addresses, path_file_out/'012_customer_addresses.csv', 200)
+    copy_from_db_file(ocean_pool, path_file_out/"011_customer_missing_addr.csv", sql_query)
+    create_csv(make_customer_addresses, path_file_out/'012_customer_addresses.csv', path_file_out/"011_customer_missing_addr.csv")
     copy_file_to_db(ocean_pool, path_file_out/"012_customer_addresses.csv")
 
 
