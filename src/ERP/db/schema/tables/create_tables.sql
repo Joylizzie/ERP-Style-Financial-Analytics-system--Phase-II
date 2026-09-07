@@ -519,7 +519,7 @@ create table if not exists journal_entry_item(
 	cc_id char(6) references cost_centres(cc_id), 
 	wbs_code char(5) references wbs(wbs_code),
 	currency_id integer references currencies not null,
-	debit_credit varchar(6) check(debit_credit in ('debit', 'credit')) NOT NULL,
+	debit_credit char(1) check(debit_credit in ('D', 'C')) NOT NULL,
 	amount numeric(12,2)
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -570,7 +570,7 @@ create table if not exists ar_invoice_item(
 	general_ledger_number integer default 102001,
 	cc_id char(6) references cost_centres(cc_id),
 	currency_id integer references currencies not null,
-	debit_credit varchar(6) default 'debit',
+	debit_credit char(1) default 'D',
 	amount numeric(12,2)
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -621,7 +621,7 @@ create table if not exists ar_receipt_item(
         description varchar(80),
         general_ledger_number integer default 102001,
         currency_id integer references currencies not null,
-        debit_credit varchar(6) default 'credit' NOT NULL,
+        debit_credit char(1) default 'C' NOT NULL,
         amount numeric(12,2)
 		, created_at TIMESTAMPTZ DEFAULT NOW()
 		, updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -668,7 +668,7 @@ create table if not exists ap_invoice_item(
 	 	cc_id char(6) references cost_centres(cc_id),
 		wbs_code char(5) references wbs(wbs_code),
         currency_id integer references currencies not null,
-       	debit_credit varchar(6) default 'credit' NOT NULL,
+       	debit_credit char(1) default 'C' NOT NULL,
         amount numeric(12,2)
 		, created_at TIMESTAMPTZ DEFAULT NOW()
 		, updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -719,7 +719,7 @@ create table if not exists ap_payment_item(
 		description varchar(80),
         general_ledger_number integer default 200001,
         currency_id integer references currencies not null,
-        debit_credit varchar(6) default 'debit' NOT NULL,
+        debit_credit char(6) default 'D' NOT NULL,
         amount numeric(12,2)
 		, created_at TIMESTAMPTZ DEFAULT NOW()
 		, updated_at TIMESTAMPTZ DEFAULT NOW(),
