@@ -3,7 +3,7 @@ import psycopg
 from pathlib import Path
 from ERP.db import create_db_and_user
 from ERP.db.db_utilities import connection_pool, run_sql, run_sql_file_autocommit, run_sql_file, copy_file_to_db, copy_from_db_file, copy_folder_db
-from ERP.utilities.random_customer import make_customer_names
+from ERP.utilities.random_customer import make_customer_names, make_customer_addresses
 from ERP.utilities.file_io import create_csv
 
 logger = logging.getLogger(__name__)
@@ -27,9 +27,11 @@ def main():
     copy_folder_db(ocean_pool, file_path)
     path_file_out = project_root_folder/"src"/"ERP"/"data"/"master_data"/"made_data_fr_seed_random"
     create_csv(make_customer_names, path_file_out/'010_customer_names.csv', 200)
-    copy_file_to_db(ocean_pool, path_file_out/"011_customer_names.csv")
-    sql_query = "select customer_id from customer_names where customer_id not in (select customer_id from customer_addresses)"
-    copy_from_db_file(ocean_pool, path_file_out/"customer_id_without addresses.csv", sql_query)
+    copy_file_to_db(ocean_pool, path_file_out/"010_customer_names.csv")
+    sql_query = "select customer_id, firstname, surname from customer_names where customer_id not in (select customer_id from customer_addresses)"
+    copy_from_db_file(ocean_pool, path_file_out/"011_customer_missing_addr.csv", sql_query)
+    create_csv(make_customer_addresses, path_file_out/'012_customer_addresses.csv', path_file_out/"011_customer_missing_addr.csv")
+    copy_file_to_db(ocean_pool, path_file_out/"012_customer_addresses.csv")
 
 
 if __name__ == '__main__':
