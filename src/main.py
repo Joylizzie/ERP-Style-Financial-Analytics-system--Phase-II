@@ -21,10 +21,10 @@ def get_args(cmd_args=None):
     return commandline_parser.parse_args()
 
 
-def main(cmd_args=None):
+def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-    args = get_args(cmd_args)
-    logger.info(f'args are {args}')
+    # args = get_args(cmd_args)
+    # logger.info(f'args are {args}')
     erp_main.main()
 
 

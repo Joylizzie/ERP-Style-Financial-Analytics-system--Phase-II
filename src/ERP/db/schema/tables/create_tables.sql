@@ -10,7 +10,7 @@ set search_path TO ocean_stream;
 
 drop table if exists companies CASCADE;
 drop table if exists coa_categories CASCADE;
-drop table if exists fiscal_months CASCADE;
+drop table if exists fiscal_periods CASCADE;
 drop table if exists sub_coa_categories CASCADE;
 drop table if exists bs_pl_idx CASCADE;
 drop table if exists business_type CASCADE;
@@ -124,12 +124,12 @@ create table if not exists fiscal_periods(
 CREATE TABLE modules (
     module_name TEXT PRIMARY KEY,
     display_name TEXT NOT NULL,
-    module_type TEXT NOT NULL CHECK (module_type IN ('subledger', 'gl'))
+    module_group TEXT NOT NULL CHECK (module_group IN ('subledger', 'general_ledger'))
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW()
 	);
 
-INSERT INTO modules (module_name, display_name, module_type) VALUES
+INSERT INTO modules (module_name, display_name, module_group) VALUES
     ('accounts_payable', 'Accounts Payable', 'subledger'),
     ('accounts_receivable', 'Accounts Receivable', 'subledger'),
     -- ('inventory_mgmt', 'Inventory Management', 'subledger'),
@@ -137,7 +137,7 @@ INSERT INTO modules (module_name, display_name, module_type) VALUES
     ('sales', 'Sales', 'subledger'),
     ('fixed_assets', 'Fixed Assets', 'subledger'),
     ('hr', 'HR', 'subledger'),
-    ('general_ledger', 'General Ledger', 'gl');
+    ('general_ledger', 'General Ledger', 'general_ledger');
 
 -- one row per (period, module) — tracks close status independently per subledger ffrom list
 
@@ -145,7 +145,7 @@ CREATE TABLE fiscal_period_module_status (
     id SERIAL PRIMARY KEY,
     period_id INT NOT NULL REFERENCES fiscal_periods(period_id),
     module_name TEXT NOT NULL,              -- 'accounts_payable', 'accounts_receivable', 'general_ledger', etc.
-    is_closed BOOLEAN NOT NULL DEFAULT FALSE,
+    is_closed BOOLEAN NOT NULL DEFAULT TRUE,
     closed_at TIMESTAMP,
     closed_by TEXT,                          -- who/what closed it (user, or 'system' for simulation)
     created_at TIMESTAMP NOT NULL DEFAULT now(),

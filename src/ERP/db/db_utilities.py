@@ -2,6 +2,7 @@
 import logging
 import psycopg
 from psycopg_pool import ConnectionPool
+from ERP.db.ocean_pool import get_pool
 from pathlib import Path
 import gzip
 import shlex
@@ -9,21 +10,9 @@ import subprocess
 
 logger = logging.getLogger(__name__)
 
-def connection_pool(host, port, dbname, user, min_size=2, max_size=10, pgpass_path=None):
-    conn_info = f"host={host} port={port} dbname={dbname} user={user}"
-    if pgpass_path:
-        logger.info(f'Find .pgpass file {pgpass_path}')
-        conn_info += f"passfile={pgpass_path}"
-    try:
-        pool = ConnectionPool(conn_info, min_size=min_size, max_size=max_size)
-        logger.info(f'connection pool created {pool}')
-        return pool
-    except Exception as e:
-        logger.error(f"Failed to initialize connection pool for {user}@{host}: {e}")
-
 
  # TO create a new db and its onwer, need postgres db and postgres as user
-def run_sql(user, dbname, sql_queries, autocommit=False):
+def run_sql_db_user(user, dbname, sql_queries, autocommit=False):
     conn = psycopg.connect(host="localhost", port="5432", dbname=dbname, user=user)
     conn.autocommit = autocommit
     try:
@@ -38,9 +27,16 @@ def run_sql(user, dbname, sql_queries, autocommit=False):
         if conn:
            conn.close()
         raise 
-    
+
+def drain_pool(pool:ConnectionPool=None):
+    if pool is None:
+        pool = get_pool()
+    pool.drain()
+      
 # Operations in the new db, use this
-def run_sql_file_autocommit(pool:ConnectionPool, file_path, filename):
+def run_sql_file_autocommit(file_path, filename, pool=None):
+    if pool is None:
+        pool = get_pool()
     try:
         sql = (file_path / filename).read_text()
         conn = pool.getconn()
@@ -59,7 +55,10 @@ def run_sql_file_autocommit(pool:ConnectionPool, file_path, filename):
     logger.info(f'Executed sql in {file_path/filename}')
 
 # Operations in the new db, use this
-def run_sql_file(pool:ConnectionPool, file_path, filename):
+def run_sql_file(file_path, filename, pool=None):
+    if pool is None:
+        pool = get_pool()
+    
     try:
         sql = (file_path / filename).read_text()
         with pool.connection() as conn:
@@ -93,10 +92,11 @@ def get_copy_sql(path_file_name:Path):
     sql_str = f"COPY {table_name}({col_str}) FROM STDIN WITH DELIMITER ',' CSV HEADER;"
     return [table_name, sql_str]
 
-def copy_file_to_db(pool:ConnectionPool, path_file_name:Path):
+def copy_file_to_db(path_file_name:Path, pool:ConnectionPool=None):
     """Copy a file to Postgres with a pool of connections"""
     table_name, copy_sql = get_copy_sql(path_file_name)
-
+    if pool is None:
+        pool = get_pool()
     try:
         logger.info(f"Processing file '{path_file_name}' into table '{table_name}'")
         if path_file_name.name.endswith(".gz"):
@@ -117,15 +117,18 @@ def copy_file_to_db(pool:ConnectionPool, path_file_name:Path):
         logger.error(f"Error occurring during copy {path_file_name} into {table_name}: {e}")
         raise e
 
-def copy_folder_db(pool:ConnectionPool, folder_path:Path):
+def copy_folder_db(folder_path:Path, pool:ConnectionPool=None):
     """ Copy files in a folder to Postgres"""
+    if pool is None:
+        pool = get_pool()
     files = sorted(folder_path.glob("*.csv"))
     for file in files:
-        copy_file_to_db(pool, file)
+        copy_file_to_db(file, pool)
 
-def copy_from_db_file(pool:ConnectionPool, path_file_name:Path, sql_query:str):
+def copy_from_db_file(path_file_name:Path, sql_query:str, pool:ConnectionPool=None):
     """Downloads data from the database using COPY TO STDOUT and writes it to a file using Connectionpool."""
-
+    if pool is None:
+        pool = get_pool()
     try:
         # Rule applied: Open the file first
         if path_file_name.name.endswith(".gz"):

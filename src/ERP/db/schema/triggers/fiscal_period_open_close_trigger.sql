@@ -1,5 +1,4 @@
 -- fiscal_periods already has start column; rename if you prefer is_period_closed
-ALTER TABLE fiscal_periods RENAME COLUMN is_closed TO is_period_closed;
 
 CREATE OR REPLACE FUNCTION check_period_not_closed()
 RETURNS TRIGGER AS $$
@@ -8,7 +7,8 @@ DECLARE
 BEGIN
     SELECT is_period_closed INTO period_closed
     FROM fiscal_periods
-    WHERE start_date <= NEW.transaction_date AND end_date >= NEW.transaction_date;
+    WHERE  NEW.transaction_date BETWEEN  start_date and end_date;
+    -- WHERE start_date <= NEW.transaction_date AND end_date >= NEW.transaction_date;
 
     IF period_closed THEN
         RAISE EXCEPTION 'Cannot post: period containing % is closed', NEW.transaction_date;
