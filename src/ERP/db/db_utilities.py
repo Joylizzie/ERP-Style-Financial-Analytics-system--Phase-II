@@ -1,6 +1,7 @@
 
 import logging
 import psycopg
+from typing import List, Callable
 from psycopg_pool import ConnectionPool
 from ERP.db.ocean_pool import get_pool
 from pathlib import Path
@@ -149,4 +150,33 @@ def copy_from_db_file(path_file_name:Path, sql_query:str, pool:ConnectionPool=No
             
     except Exception as e:
         logger.error(f"Error occurring during copy {path_file_name}: {e}")
+        raise e
+
+def run_sql_get_from_db_tup(sql, *args):
+    if pool is None:
+        pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, args)  
+            query_res = cur.fetchall()# a list of tuples
+    return query_res
+
+def copy_generator_tup_to_db(gen_tup, table_name:str, table_cols:List, pool:ConnectionPool=None):
+    """Copy a generator of tuples to Postgres with a pool of connections"""
+
+    sql = f"COPY {table_name} ({','.join(table_cols)}) FROM STDIN"
+
+    if pool is None:
+        pool = get_pool()
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                with cur.copy(sql) as copy:
+                    for tup in gen_tup:
+                        copy.write_row(tup)
+                            
+        logger.info(f"Successfully uploaded to {table_name}")
+            
+    except Exception as e:
+        logger.error(f"Error occurring during copy into {table_name}: {e}")
         raise e

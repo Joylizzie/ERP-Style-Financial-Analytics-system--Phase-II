@@ -1,12 +1,4 @@
-show search_path;
-
-DROP SCHEMA IF EXISTS ocean_stream CASCADE;
-
-CREATE SCHEMA IF NOT EXISTS ocean_stream
-AUTHORIZATION CURRENT_USER; 
-
-set search_path TO ocean_stream;
-
+-- This is run by ocean_user, and defaulted search path as ocean_stream
 
 drop table if exists companies CASCADE;
 drop table if exists coa_categories CASCADE;
@@ -107,8 +99,7 @@ create table if not exists bs_pl_idx(
     );
     
 create table if not exists fiscal_periods(
-    period_id serial PRIMARY key NOT NULL,
-    fiscal_year integer NOT NULL CHECK (fiscal_year BETWEEN 2000 AND 9999),
+        fiscal_year integer NOT NULL CHECK (fiscal_year BETWEEN 2000 AND 9999),
     fiscal_month integer NOT NULL CHECK (fiscal_month BETWEEN 1 AND 12),
     start_date date unique NOT NULL default ('2021-03-01')::date, -- default will be overwritten by trigger
     end_date date unique NOT NULL default ('2021-03-31')::date  -- default will be overwritten by trigger
@@ -117,7 +108,7 @@ create table if not exists fiscal_periods(
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW()
 
-    , UNIQUE (fiscal_year, fiscal_month)
+    , PRIMARY KEY (fiscal_year, fiscal_month)
 	, CHECK (start_date < end_date)
 	);    
 
@@ -142,16 +133,19 @@ INSERT INTO modules (module_name, display_name, module_group) VALUES
 -- one row per (period, module) — tracks close status independently per subledger ffrom list
 
 CREATE TABLE fiscal_period_module_status (
-    id SERIAL PRIMARY KEY,
-    period_id INT NOT NULL REFERENCES fiscal_periods(period_id),
-    module_name TEXT NOT NULL,              -- 'accounts_payable', 'accounts_receivable', 'general_ledger', etc.
-    is_closed BOOLEAN NOT NULL DEFAULT TRUE,
-    closed_at TIMESTAMP,
-    closed_by TEXT,                          -- who/what closed it (user, or 'system' for simulation)
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+     fiscal_year INT NOT NULL 
+    , fiscal_month INT NOT NULL
+    , module_name TEXT NOT NULL-- 'accounts_payable', 'accounts_receivable', 'general_ledger', etc.
+    , is_closed BOOLEAN NOT NULL DEFAULT TRUE
+    , closed_at TIMESTAMP
+    , closed_by TEXT                         -- who/what closed it (user, or 'system' for simulation)
+    , created_at TIMESTAMP NOT NULL DEFAULT now()
+    , updated_at TIMESTAMP NOT NULL DEFAULT now()
 
-    UNIQUE (period_id, module_name)
+    , PRIMARY KEY (fiscal_year, fiscal_month, module_name)
+	, CONSTRAINT fk_fiscal_period 
+        FOREIGN KEY (fiscal_year, fiscal_month) 
+			REFERENCES fiscal_periods(fiscal_year, fiscal_month)
 );
     	
 create table if not exists tax(

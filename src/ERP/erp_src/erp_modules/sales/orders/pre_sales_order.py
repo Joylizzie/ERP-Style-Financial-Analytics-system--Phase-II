@@ -50,7 +50,30 @@ def generate_value_tuples(n_sample_b, n_sample_i, start_date, end_date):
     t_i = [('US001',randomdate(start_date, end_date),*i_cust_ids_sample[i]) for i in range(n_sample_i)]
     return t_b, t_i
 
-       
+def get_cust_ids_with_type(bu_type)->List[tuple]:
+    "Get a list of customer_ids by business_type and save in different csv files"
+    sql = """select customer_id from customer_names 
+            where business_type_id= %s and company_code='US001';"""
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (bu_type,))
+            cust_ids = cur.fetchall()# a list of tuples
+
+    return cust_ids
+
+def sales_order_value_tups_gen(sample_size_bus, sample_size_ind, start_date, end_date):
+    bu_types = get_business_types()    
+    for bu_type in bu_types:
+        cust_ids = get_cust_ids_with_type(bu_type)
+        for _ in range(sample_size_bus):           
+            cust_id = random.choice(cust_ids)[0]
+            yield ('US001', randomdate(start_date, end_date), cust_id)
+
+        for _ in range(sample_size_ind):           
+            cust_id = random.choice(cust_ids)[0]
+            yield ('US001', randomdate(start_date, end_date), cust_id)
+
 # generate sales order values and save in csv file, then upload to db from psql which is quicker comparing to below way.
 def _to_csv(n_sample_b, n_sample_i, start_date, end_date, path):
     t_b, t_i = generate_value_tuples(n_sample_b, n_sample_i, start_date, end_date)
@@ -66,4 +89,5 @@ def _to_csv(n_sample_b, n_sample_i, start_date, end_date, path):
         for j in range(n_sample_i):
             csv_writer.writerow(t_i[j])
     logger.info(f'{n_sample_b}  and {n_sample_i} pre_sales_orders writing')
+
 

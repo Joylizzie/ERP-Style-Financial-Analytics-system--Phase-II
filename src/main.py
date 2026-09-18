@@ -5,6 +5,7 @@ from ERP import erp_main
 
 logger = logging.getLogger(__name__)
 
+# Not used yet
 def get_args(cmd_args=None):
     """Configure commandline: where to get source data -- query dw or existing csv files;
     where to save output files; Environment -- prod or statging; period:--start_time, end_time
@@ -22,7 +23,8 @@ def get_args(cmd_args=None):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+    # Configure the format globally to include the function name
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - [%(levelname)s] - %(name)s - Function: %(funcName)s - Message: %(message)s")
     # args = get_args(cmd_args)
     # logger.info(f'args are {args}')
     erp_main.main()
