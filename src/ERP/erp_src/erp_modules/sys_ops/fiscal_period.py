@@ -1,46 +1,52 @@
+import logging
+# import psycopg
+from typing import List, Any
+# from psycopg_pool import ConnectionPool
+from datetime import date
+from ERP.db.ocean_pool import get_pool
 
-import
+logger = logging.getLogger(__name__)
 
-class PeriodLifecycleService:
+def ensure_create_fiscal_period(year, month):
+    pool = get_pool()
+    sql_fiscal_periods = """
+            INSERT INTO fiscal_periods (fiscal_year, fiscal_month)
+            VALUES (%s, %s)
+            ON CONFLICT (fiscal_year, fiscal_month) DO NOTHING;
+            """
+    sql_fiscal_period_module_status = """
+            INSERT INTO fiscal_period_module_status (fiscal_year, fiscal_month, module_name)
+            SELECT %s, %s, module_name from modules
+            ON CONFLICT  (fiscal_year, fiscal_month, module_name) DO NOTHING;        
+            """
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql_fiscal_periods, (year, month))
+            cur.execute(sql_fiscal_period_module_status, (year, month))
 
-    # def close_module_period(self, fiscal_year: int, fiscal_month:int, module_name: str, closed_by: str = "system", pool:Connectionpool):
-    #     """Universal close: closes this module for period N, opens it for period N+1.
-    #     Applies identically to every subledger AND to GL."""
+def close_fiscal_period(year, month):
+    pool = get_pool()
+    sql = """
+            UPDATE fiscal_period_module_status
+            SET is_closed = True, 
+                closed_at = NOW(),
+                updated_at = NOW(),
+                closed_by = 'system_user'
+                
+            WHERE fiscal_year = %s AND fiscal_month = %s
+            """
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (year, month))
 
-    #     # GL has one extra precondition: all subledgers for THIS period must already be closed
-    #     if module_name == "general_ledger":
-    #         with self.conn.cursor() as cur:
-    #             cur.execute("""
-    #                 SELECT string_agg(s.module_name, ', ') FROM fiscal_period_module_status s
-    #                 JOIN modules m ON m.module_name = s.module_name
-    #                 WHERE s.period_id = %s AND m.module_type = 'subledger' AND s.status != 'closed'
-    #             """, (fiscal_year, fiscal_month))
-    #             open_subledgers = cur.fetchone()[0]
-    #             if open_subledgers:
-    #                 raise PermissionError(f"Cannot close GL: subledgers still open: {open_subledgers}")
-
-    #     with self.conn.cursor() as cur:
-    #         cur.execute("""
-    #             UPDATE fiscal_period_module_status
-    #             SET status = 'closed', closed_at = now(), closed_by = %s, updated_at = now()
-    #             WHERE period_id = %s AND module_name = %s
-    #         """, (closed_by, period_id, module_name))
-
-    #         cur.execute("""
-    #             UPDATE fiscal_period_module_status
-    #             SET status = 'open', opened_at = now(), updated_at = now()
-    #             WHERE period_id = %s AND module_name = %s
-    #         """, (next_period_id, module_name))
-    #     self.conn.commit()
-
-    def assert_postable(self, module_name: str, period_id: int):
-        """Called before ANY posting (GL or subledger) — checks this exact
-        (period, module) pair is the one currently open."""
-        with self.conn.cursor() as cur:
-            cur.execute("""
-                SELECT status FROM fiscal_period_module_status
-                WHERE period_id = %s AND module_name = %s
-            """, (period_id, module_name))
-            row = cur.fetchone()
-            if row is None or row[0] != 'open':
-                raise PermissionError(f"{module_name} period {period_id} is not open for posting")
+# def assert_postable(self, module_name: str, period_id: int):
+#     """Called before ANY posting (GL or subledger) — checks this exact
+#     (period, module) pair is the one currently open."""
+#     with self.conn.cursor() as cur:
+#         cur.execute("""
+#             SELECT status FROM fiscal_period_module_status
+#             WHERE period_id = %s AND module_name = %s
+#         """, (period_id, module_name))
+#         row = cur.fetchone()
+#         if row is None or row[0] != 'open':
+#             raise PermissionError(f"{module_name} period {period_id} is not open for posting")

@@ -62,15 +62,11 @@ def get_cust_ids_with_type(bu_type)->List[tuple]:
 
     return cust_ids
 
-def sales_order_value_tups_gen(sample_size_bus, sample_size_ind, start_date, end_date):
+def sales_order_value_tups_gen(bt_sample_size_lst, start_date, end_date):
     bu_types = get_business_types()    
     for bu_type in bu_types:
         cust_ids = get_cust_ids_with_type(bu_type)
-        for _ in range(sample_size_bus):           
-            cust_id = random.choice(cust_ids)[0]
-            yield ('US001', randomdate(start_date, end_date), cust_id)
-
-        for _ in range(sample_size_ind):           
+        for _ in range(bt_sample_size_lst[bu_type - 1]):   #Business_tyoe start from 1, 1 id business, 2 is individule        
             cust_id = random.choice(cust_ids)[0]
             yield ('US001', randomdate(start_date, end_date), cust_id)
 

@@ -1,8 +1,9 @@
 
 import logging
 import psycopg
-from typing import List, Callable
+from typing import List, Any
 from psycopg_pool import ConnectionPool
+from datetime import date
 from ERP.db.ocean_pool import get_pool
 from pathlib import Path
 import gzip
@@ -179,4 +180,27 @@ def copy_generator_tup_to_db(gen_tup, table_name:str, table_cols:List, pool:Conn
             
     except Exception as e:
         logger.error(f"Error occurring during copy into {table_name}: {e}")
+        raise e
+
+def copy_tup_from_db(sql_query:str, *args: Any, pool:ConnectionPool=None):
+    """query data using Copy  to STDOUT from Postgres with 
+    a pool of connections. yield may not a good idea if yield result is not consumed immeditaly"""
+
+    copy_sql = f"COPY ({sql_query}) TO STDOUT"
+
+    if pool is None:
+        pool = get_pool()
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                with cur.copy(copy_sql) as copy:
+                    for row in copy.rows():# fetch tuple
+                        # TODO choose tuple or dict output
+                    # for row in copy.dicts():# fetch dict 
+                        yield row
+                            
+        logger.info(f"Successfully downloaded from db")
+            
+    except Exception as e:
+        logger.error(f"Error occurring during copy from db: {e}")
         raise e

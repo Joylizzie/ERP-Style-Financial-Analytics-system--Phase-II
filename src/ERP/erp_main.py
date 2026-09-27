@@ -10,6 +10,7 @@ from ERP.utilities.file_io import create_csv
 import config as conf
 # from config import start_date, end_date, fresh_start, make_monthly_adj, initial_num_customer_to_gen
 from ERP.erp_src.erp_modules.sales.orders.pre_sales_order import sales_order_value_tups_gen
+import ERP.erp_src.erp_modules.sys_ops.fiscal_period as fs
 
 logger = logging.getLogger(__name__)
 project_root_folder = Path().resolve()
@@ -39,6 +40,7 @@ def increment_month(source_date:date):
 def gen_data():
     cur_date = conf.start_date
     while cur_date < conf.end_date:
+        logger.info(f'')
         logger.info(f"About to generate data for mon {cur_date}")
         gen_data_for_month(cur_date.year, cur_date.month)
         cur_date = increment_month(cur_date)
@@ -51,17 +53,21 @@ def monthly_adjs(year, month):
 def gen_everymon_data(year, month):
     # Generate sales_orders by customer_ids in "year, month"
     cur_start_date = date(year, month, 1)
-    _, last_day = calendar.monthrange(year, month)
-    cur_end_date = date(year, month, last_day)
-    sales_order_ids_gen = sales_order_value_tups_gen(conf.initial_num_bus_customer_to_gen,\
-           conf.initial_num_ind_customer_to_gen, cur_start_date, cur_end_date)
+    cur_end_date = date(year, month, calendar.monthrange(year, month)[1]) # the end of the month
+    sales_order_ids_gen = sales_order_value_tups_gen([conf.initial_num_bus_customer_to_gen,\
+           conf.initial_num_ind_customer_to_gen], cur_start_date, cur_end_date)
     table_cols = ['company_code', 's_order_date', 'customer_id']
-    logger.info(f"start to uploading {year}-{month} sales_order_ids ")
+    logger.info(f"start to upload {year}-{month} sales_order_ids ")
     copy_generator_tup_to_db(sales_order_ids_gen, "sales_orders", table_cols)
-    logger.info(f"Finished uploading {year}-{month} sales_order_ids ")
-
+    logger.info(f"Finished uploading {conf.initial_num_bus_customer_to_gen} and {conf.initial_num_ind_customer_to_gen} in {year}-{month} sales_order_ids")
 
 def gen_data_for_month(year, month):
+    """ Create the fiscal period, module status;
+        do all the transactions and produce Transaction_list, TB, Balance Sheet, PL
+        Then close the fiscal perod
+    """
+    fs.ensure_create_fiscal_period(year, month)
+    
     if conf.fresh_start and (conf.start_date.year == year and conf.start_date.month == month):
         # generate initial data for customers
         path_file_out = project_root_folder/"src"/"ERP"/"data"/"master_data"/"made_data_fr_seed_random"
@@ -77,10 +83,9 @@ def gen_data_for_month(year, month):
 
     elif conf.make_monthly_adj:
         monthly_adjs(year, month)
-    else:
-        gen_everymon_data(year, month)  
+    gen_everymon_data(year, month)  
 
-
+    fs.close_fiscal_period(year, month)
 
 def main():
     if conf.fresh_start:

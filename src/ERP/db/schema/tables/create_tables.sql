@@ -99,7 +99,7 @@ create table if not exists bs_pl_idx(
     );
     
 create table if not exists fiscal_periods(
-        fiscal_year integer NOT NULL CHECK (fiscal_year BETWEEN 2000 AND 9999),
+    fiscal_year integer NOT NULL CHECK (fiscal_year BETWEEN 2000 AND 9999),
     fiscal_month integer NOT NULL CHECK (fiscal_month BETWEEN 1 AND 12),
     start_date date unique NOT NULL default ('2021-03-01')::date, -- default will be overwritten by trigger
     end_date date unique NOT NULL default ('2021-03-31')::date  -- default will be overwritten by trigger
@@ -136,7 +136,7 @@ CREATE TABLE fiscal_period_module_status (
      fiscal_year INT NOT NULL 
     , fiscal_month INT NOT NULL
     , module_name TEXT NOT NULL-- 'accounts_payable', 'accounts_receivable', 'general_ledger', etc.
-    , is_closed BOOLEAN NOT NULL DEFAULT TRUE
+    , is_closed BOOLEAN NOT NULL DEFAULT False 
     , closed_at TIMESTAMP
     , closed_by TEXT                         -- who/what closed it (user, or 'system' for simulation)
     , created_at TIMESTAMP NOT NULL DEFAULT now()
