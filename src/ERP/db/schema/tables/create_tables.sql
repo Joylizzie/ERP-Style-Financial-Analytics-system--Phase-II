@@ -422,8 +422,8 @@ create table if not exists sales_orders(
 	sales_order_id serial primary key not null,
 	s_order_date DATE NOT NULL,
 	customer_id char(6) references customer_names(customer_id) not null
-	, fiscal_year INT GENERATED ALWAYS AS ( EXTRACT(YEAR FROM s_order_date)) STORED
-    , fiscal_month INT GENERATED ALWAYS AS (EXTRACT(MONTH FROM s_order_date)) STORED
+	, fiscal_year INT 
+    , fiscal_month INT
 	, module_name TEXT DEFAULT 'sales' NOT NULL
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),

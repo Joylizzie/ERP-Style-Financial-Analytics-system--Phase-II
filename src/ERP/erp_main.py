@@ -57,7 +57,7 @@ def gen_everymon_data(year, month):
     cur_end_date = date(year, month, calendar.monthrange(year, month)[1]) # the end of the month
     sales_order_ids_gen = sales_order_value_tups_gen([conf.initial_num_bus_customer_to_gen,\
            conf.initial_num_ind_customer_to_gen], cur_start_date, cur_end_date)
-    table_cols = ['company_code', 's_order_date', 'customer_id']
+    table_cols = ['company_code', 's_order_date', 'fiscal_year', 'fiscal_month', 'customer_id']
     logger.info(f"start to upload {year}-{month} sales_order_ids ")
     copy_generator_tup_to_db(sales_order_ids_gen, "sales_orders", table_cols)
     logger.info(f"Finished uploading {conf.initial_num_bus_customer_to_gen} and {conf.initial_num_ind_customer_to_gen} in {year}-{month} sales_order_ids")

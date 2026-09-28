@@ -68,20 +68,22 @@ def sales_order_value_tups_gen(bt_sample_size_lst, start_date, end_date):
         cust_ids = get_cust_ids_with_type(bu_type)
         for _ in range(bt_sample_size_lst[bu_type - 1]):   #Business_tyoe start from 1, 1 id business, 2 is individule        
             cust_id = random.choice(cust_ids)[0]
-            yield ('US001', randomdate(start_date, end_date), cust_id)
+            random_date = randomdate(start_date, end_date)
+            fiscal_year, fiscal_month = random_date.year, random_date.month
+            yield ('US001', random_date, fiscal_year, fiscal_month, cust_id)
 
 # generate sales order values and save in csv file, then upload to db from psql which is quicker comparing to below way.
 def _to_csv(n_sample_b, n_sample_i, start_date, end_date, path):
     t_b, t_i = generate_value_tuples(n_sample_b, n_sample_i, start_date, end_date)
     with open(path/f'pre_sales_orders_business.csv', 'w') as write_obj:
         csv_writer = csv.writer(write_obj)
-        csv_writer.writerow(['company_code', 's_order_date', 'customer_id']) # write header
+        csv_writer.writerow(['company_code', 's_order_date', 'fiscal_year', 'fiscal_month', 'customer_id']) # write header
         for i in range(n_sample_b):
             csv_writer.writerow(t_b[i])
 
     with open(path/f'pre_sales_orders_individul.csv', 'w') as write_obj:
         csv_writer = csv.writer(write_obj)
-        csv_writer.writerow(['company_code', 's_order_date', 'customer_id']) # write header
+        csv_writer.writerow(['company_code', 's_order_date', 'fiscal_year', 'fiscal_month', 'customer_id']) # write header
         for j in range(n_sample_i):
             csv_writer.writerow(t_i[j])
     logger.info(f'{n_sample_b}  and {n_sample_i} pre_sales_orders writing')

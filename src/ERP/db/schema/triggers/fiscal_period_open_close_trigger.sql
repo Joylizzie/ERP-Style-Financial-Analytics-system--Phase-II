@@ -7,13 +7,12 @@ DECLARE
 BEGIN
     SELECT is_closed INTO period_closed
     FROM fiscal_period_module_status
-    WHERE  fiscal_year = EXTRACT(YEAR FROM NEW.s_order_date)
-     AND fiscal_month = EXTRACT(month FROM NEW.s_order_date)
+    WHERE  fiscal_year = NEW.fiscal_year
+     AND fiscal_month =  NEW.fiscal_month
      AND module_name = NEW.module_name;
 
     IF period_closed THEN
-        -- RAISE EXCEPTION 'Cannot post: period containing % is closed', NEW.transaction_date;
-        RAISE EXCEPTION 'Cannot post: period containing % is closed', NEW.s_order_date;
+        RAISE EXCEPTION 'Cannot post: period containing % is closed', (NEW.fiscal_year, NEW.fiscal_month);
     END IF;
 
     RETURN NEW;
