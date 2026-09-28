@@ -19,13 +19,34 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_so_no_post_to_closed_period
+CREATE TRIGGER trg_sa_or_no_post_to_closed_period
     BEFORE INSERT OR UPDATE ON sales_orders
     FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
 
-CREATE TRIGGER trg_si_no_post_to_closed_period
+CREATE TRIGGER trg_sa_in_no_post_to_closed_period
     BEFORE INSERT OR UPDATE ON sales_invoices
     FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
--- CREATE TRIGGER trg_gl_no_post_to_closed_period
---     BEFORE INSERT OR UPDATE ON gl_transactions
---     FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
+
+CREATE TRIGGER trg_ar_in_no_post_to_closed_period
+    BEFORE INSERT OR UPDATE ON ar_invoice
+    FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
+
+CREATE TRIGGER trg_ar_re_no_post_to_closed_period
+    BEFORE INSERT OR UPDATE ON ar_receipt
+    FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
+
+CREATE TRIGGER trg_pu_or_no_post_to_closed_period
+    BEFORE INSERT OR UPDATE ON purchase_orders
+    FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
+
+CREATE TRIGGER trg_ap_in_no_post_to_closed_period
+    BEFORE INSERT OR UPDATE ON ap_invoice
+    FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
+
+CREATE TRIGGER trg_ap_pa_no_post_to_closed_period
+    BEFORE INSERT OR UPDATE ON ap_payment
+    FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
+
+CREATE TRIGGER trg_gl_no_post_to_closed_period
+    BEFORE INSERT OR UPDATE ON journal_entry
+    FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
