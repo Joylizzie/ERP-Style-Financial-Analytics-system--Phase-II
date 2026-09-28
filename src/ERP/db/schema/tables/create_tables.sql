@@ -373,8 +373,8 @@ create table if not exists purchase_orders (
 	company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
 	p_order_id serial primary key,
 	p_order_date DATE NOT NULL		
-	, fiscal_year INT GENERATED ALWAYS AS ( EXTRACT(YEAR FROM p_order_date)) STORED
-    , fiscal_month INT GENERATED ALWAYS AS (EXTRACT(MONTH FROM p_order_date)) STORED
+	, fiscal_year INT 
+    , fiscal_month INT 
 	, vendor_id char(6) not null
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -475,8 +475,8 @@ create table if not exists sales_invoices (
     sales_order_id integer not null references sales_orders(sales_order_id),
 	customer_id char(6) references customer_names(customer_id) not null,
 	amount numeric(12,2)
-	, fiscal_year INT GENERATED ALWAYS AS ( EXTRACT(YEAR FROM invoice_date)) STORED
-    , fiscal_month INT GENERATED ALWAYS AS (EXTRACT(MONTH FROM invoice_date)) STORED
+	, fiscal_year INT 
+    , fiscal_month INT 
 	, module_name TEXT DEFAULT 'sales' NOT NULL REFERENCES modules(module_name) 
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -507,8 +507,8 @@ create table if not exists journal_entry(
     entry_type_id varchar(3) not null references entry_type(entry_type_id) default 'JE',
     je_id serial primary key
 	, transaction_date DATE NOT NULL
-	, fiscal_year INT GENERATED ALWAYS AS ( EXTRACT(YEAR FROM transaction_date)) STORED
-    , fiscal_month INT GENERATED ALWAYS AS (EXTRACT(MONTH FROM transaction_date)) STORED
+	, fiscal_year INT 
+    , fiscal_month INT 
 	, module_name TEXT DEFAULT 'general_ledger' NOT NULL
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -564,8 +564,8 @@ create table if not exists ar_invoice(
 	entry_type_id varchar(3) default 'RIE',
 	rie_id serial primary key not null,
 	transaction_date DATE NOT NULL
-	, fiscal_year INT GENERATED ALWAYS AS ( EXTRACT(YEAR FROM transaction_date)) STORED
-    , fiscal_month INT GENERATED ALWAYS AS (EXTRACT(MONTH FROM transaction_date)) STORED
+	, fiscal_year INT 
+    , fiscal_month INT 
 	, module_name TEXT DEFAULT 'accounts_receivable' NOT NULL
 	, invoice_id integer not null
 	, created_at TIMESTAMPTZ DEFAULT NOW()
@@ -621,8 +621,8 @@ create table if not exists ar_receipt(
         entry_type_id varchar(3) default 'RRE',
         rre_id serial primary key not null
 		, transaction_date DATE NOT NULL
-	    , fiscal_year INT GENERATED ALWAYS AS ( EXTRACT(YEAR FROM transaction_date)) STORED
-        , fiscal_month INT GENERATED ALWAYS AS (EXTRACT(MONTH FROM transaction_date)) STORED
+	    , fiscal_year INT 
+        , fiscal_month INT 
 		, module_name TEXT DEFAULT 'accounts_receivable' NOT NULL
 		, rie_id integer not null
 		, customer_id char(6) check (customer_id ~ '[A-Z]{3}[0-9]{3}' )
@@ -672,8 +672,8 @@ create table if not exists ap_invoice(
 	    pie_id serial primary key not null,
         vendor_id char(5) check (vendor_id ~ '[A-Z]{2}[0-9]{3}' ) not null
 		, transaction_date DATE NOT NULL
-	    , fiscal_year INT GENERATED ALWAYS AS ( EXTRACT(YEAR FROM transaction_date)) STORED
-        , fiscal_month INT GENERATED ALWAYS AS (EXTRACT(MONTH FROM transaction_date)) STORED
+	    , fiscal_year INT 
+        , fiscal_month INT 
 		, module_name TEXT DEFAULT 'accounts_payable' NOT NULL
         , p_order_id integer references purchase_orders(p_order_id)
         , invoice_id varchar(10) not null
@@ -730,8 +730,8 @@ create table if not exists ap_payment(
         entry_type_id varchar(3) default 'PPE',
 		ppe_id serial primary key
 		, transaction_date DATE NOT NULL
-		, fiscal_year INT GENERATED ALWAYS AS ( EXTRACT(YEAR FROM transaction_date)) STORED
-    	, fiscal_month INT GENERATED ALWAYS AS (EXTRACT(MONTH FROM transaction_date)) STORED
+		, fiscal_year INT 
+    	, fiscal_month INT 
 		, module_name TEXT DEFAULT 'accounts_payable' NOT NULL
 		, pie_id integer not null
         , vendor_id char(5) check (vendor_id ~ '[A-Z]{2}[0-9]{3}' ) not null

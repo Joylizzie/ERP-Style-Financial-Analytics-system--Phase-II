@@ -23,6 +23,9 @@ CREATE TRIGGER trg_so_no_post_to_closed_period
     BEFORE INSERT OR UPDATE ON sales_orders
     FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
 
+CREATE TRIGGER trg_si_no_post_to_closed_period
+    BEFORE INSERT OR UPDATE ON sales_invoices
+    FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
 -- CREATE TRIGGER trg_gl_no_post_to_closed_period
 --     BEFORE INSERT OR UPDATE ON gl_transactions
 --     FOR EACH ROW EXECUTE FUNCTION check_period_not_closed();
