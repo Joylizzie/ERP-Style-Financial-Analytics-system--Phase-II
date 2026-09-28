@@ -1,16 +1,8 @@
-show search_path;
-
-DROP SCHEMA IF EXISTS ocean_stream CASCADE;
-
-CREATE SCHEMA IF NOT EXISTS ocean_stream
-AUTHORIZATION CURRENT_USER; 
-
-set search_path TO ocean_stream;
-
+-- This is run by ocean_user, and defaulted search path as ocean_stream
 
 drop table if exists companies CASCADE;
 drop table if exists coa_categories CASCADE;
-drop table if exists fiscal_months CASCADE;
+drop table if exists fiscal_periods CASCADE;
 drop table if exists sub_coa_categories CASCADE;
 drop table if exists bs_pl_idx CASCADE;
 drop table if exists business_type CASCADE;
@@ -107,7 +99,6 @@ create table if not exists bs_pl_idx(
     );
     
 create table if not exists fiscal_periods(
-    period_id serial PRIMARY key NOT NULL,
     fiscal_year integer NOT NULL CHECK (fiscal_year BETWEEN 2000 AND 9999),
     fiscal_month integer NOT NULL CHECK (fiscal_month BETWEEN 1 AND 12),
     start_date date unique NOT NULL default ('2021-03-01')::date, -- default will be overwritten by trigger
@@ -117,19 +108,19 @@ create table if not exists fiscal_periods(
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW()
 
-    , UNIQUE (fiscal_year, fiscal_month)
+    , PRIMARY KEY (fiscal_year, fiscal_month)
 	, CHECK (start_date < end_date)
 	);    
 
 CREATE TABLE modules (
     module_name TEXT PRIMARY KEY,
     display_name TEXT NOT NULL,
-    module_type TEXT NOT NULL CHECK (module_type IN ('subledger', 'gl'))
+    module_group TEXT NOT NULL CHECK (module_group IN ('subledger', 'general_ledger'))
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW()
 	);
 
-INSERT INTO modules (module_name, display_name, module_type) VALUES
+INSERT INTO modules (module_name, display_name, module_group) VALUES
     ('accounts_payable', 'Accounts Payable', 'subledger'),
     ('accounts_receivable', 'Accounts Receivable', 'subledger'),
     -- ('inventory_mgmt', 'Inventory Management', 'subledger'),
@@ -137,21 +128,24 @@ INSERT INTO modules (module_name, display_name, module_type) VALUES
     ('sales', 'Sales', 'subledger'),
     ('fixed_assets', 'Fixed Assets', 'subledger'),
     ('hr', 'HR', 'subledger'),
-    ('general_ledger', 'General Ledger', 'gl');
+    ('general_ledger', 'General Ledger', 'general_ledger');
 
 -- one row per (period, module) — tracks close status independently per subledger ffrom list
 
 CREATE TABLE fiscal_period_module_status (
-    id SERIAL PRIMARY KEY,
-    period_id INT NOT NULL REFERENCES fiscal_periods(period_id),
-    module_name TEXT NOT NULL,              -- 'accounts_payable', 'accounts_receivable', 'general_ledger', etc.
-    is_closed BOOLEAN NOT NULL DEFAULT FALSE,
-    closed_at TIMESTAMP,
-    closed_by TEXT,                          -- who/what closed it (user, or 'system' for simulation)
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+     fiscal_year INT NOT NULL 
+    , fiscal_month INT NOT NULL
+    , module_name TEXT NOT NULL-- 'accounts_payable', 'accounts_receivable', 'general_ledger', etc.
+    , is_closed BOOLEAN NOT NULL DEFAULT False 
+    , closed_at TIMESTAMP
+    , closed_by TEXT                         -- who/what closed it (user, or 'system' for simulation)
+    , created_at TIMESTAMP NOT NULL DEFAULT now()
+    , updated_at TIMESTAMP NOT NULL DEFAULT now()
 
-    UNIQUE (period_id, module_name)
+    , PRIMARY KEY (fiscal_year, fiscal_month, module_name)
+	, CONSTRAINT fk_fiscal_period 
+        FOREIGN KEY (fiscal_year, fiscal_month) 
+			REFERENCES fiscal_periods(fiscal_year, fiscal_month)
 );
     	
 create table if not exists tax(
@@ -378,8 +372,10 @@ create table if not exists products (
 create table if not exists purchase_orders (
 	company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
 	p_order_id serial primary key,
-	p_order_date DATE NOT NULL,
-	vendor_id char(6) not null
+	p_order_date DATE NOT NULL		
+	, fiscal_year INT 
+    , fiscal_month INT 
+	, vendor_id char(6) not null
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
 	CONSTRAINT fk_companyCode
@@ -426,14 +422,20 @@ create table if not exists sales_orders(
 	sales_order_id serial primary key not null,
 	s_order_date DATE NOT NULL,
 	customer_id char(6) references customer_names(customer_id) not null
+	, fiscal_year INT 
+    , fiscal_month INT
+	, module_name TEXT DEFAULT 'sales' NOT NULL
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
 	CONSTRAINT fk_companyCode
       FOREIGN KEY(company_code) 
-	  REFERENCES companies(company_code),
-	 CONSTRAINT fk_customer
+	  REFERENCES companies(company_code)
+	, CONSTRAINT fk_customer
       	FOREIGN KEY(customer_id) 
 	  		REFERENCES customer_names(customer_id)
+	, CONSTRAINT fk_fiscal_module
+      	FOREIGN KEY(fiscal_year, fiscal_month, module_name) 
+	  		REFERENCES fiscal_period_module_status(fiscal_year, fiscal_month, module_name)
     );
 
 create table if not exists sales_orders_items (
@@ -470,9 +472,12 @@ create table if not exists sales_invoices (
 	company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
 	invoice_date DATE NOT NULL,
 	invoice_id serial primary key not null,
-    sales_order_id integer not null,
+    sales_order_id integer not null references sales_orders(sales_order_id),
 	customer_id char(6) references customer_names(customer_id) not null,
 	amount numeric(12,2)
+	, fiscal_year INT 
+    , fiscal_month INT 
+	, module_name TEXT DEFAULT 'sales' NOT NULL REFERENCES modules(module_name) 
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
 	CONSTRAINT fk_companyCode
@@ -484,6 +489,9 @@ create table if not exists sales_invoices (
 	 CONSTRAINT fk_customer
       	FOREIGN KEY(customer_id) 
 	  		REFERENCES customer_names(customer_id)
+	, CONSTRAINT fk_fiscal_module
+      	FOREIGN KEY(fiscal_year, fiscal_month, module_name) 
+	  		REFERENCES fiscal_period_module_status(fiscal_year, fiscal_month, module_name)
     );
 
 create table if not exists entry_type(
@@ -496,16 +504,23 @@ create table if not exists entry_type(
 
 create table if not exists journal_entry(
     company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
-    entry_type_id varchar(3) default 'JE',
+    entry_type_id varchar(3) not null references entry_type(entry_type_id) default 'JE',
     je_id serial primary key
+	, transaction_date DATE NOT NULL
+	, fiscal_year INT 
+    , fiscal_month INT 
+	, module_name TEXT DEFAULT 'general_ledger' NOT NULL
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
         CONSTRAINT fk_companyCode
       	    FOREIGN KEY(company_code) 
-	  		    REFERENCES companies(company_code),
-        CONSTRAINT fk_entrytype
+	 		    REFERENCES companies(company_code)
+    ,    CONSTRAINT fk_entrytype
             FOREIGN KEY(entry_type_id) 
 	            REFERENCES entry_type(entry_type_id)
+	, CONSTRAINT fk_fiscal_module
+      	FOREIGN KEY(fiscal_year, fiscal_month, module_name) 
+	  		REFERENCES fiscal_period_module_status(fiscal_year, fiscal_month, module_name)
         );
  
 
@@ -528,7 +543,7 @@ create table if not exists journal_entry_item(
 	  		    REFERENCES companies(company_code),
         CONSTRAINT fk_journalentryid
             FOREIGN KEY(je_id) 
-	            REFERENCES  journal_entry( je_id),
+	            REFERENCES  journal_entry(je_id),
         CONSTRAINT coasgln
             FOREIGN KEY(general_ledger_number) 
 	            REFERENCES  chart_of_accounts(general_ledger_number),
@@ -548,8 +563,11 @@ create table if not exists ar_invoice(
 	company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
 	entry_type_id varchar(3) default 'RIE',
 	rie_id serial primary key not null,
-	date DATE NOT NULL,
-	invoice_id integer not null
+	transaction_date DATE NOT NULL
+	, fiscal_year INT 
+    , fiscal_month INT 
+	, module_name TEXT DEFAULT 'accounts_receivable' NOT NULL
+	, invoice_id integer not null
 	, created_at TIMESTAMPTZ DEFAULT NOW()
 	, updated_at TIMESTAMPTZ DEFAULT NOW(),
 
@@ -559,6 +577,9 @@ create table if not exists ar_invoice(
 		CONSTRAINT fk_salesinvoice
 		FOREIGN KEY(invoice_id) 
 			REFERENCES sales_invoices(invoice_id)	
+	, CONSTRAINT fk_fiscal_module
+      	FOREIGN KEY(fiscal_year, fiscal_month, module_name) 
+	  		REFERENCES fiscal_period_module_status(fiscal_year, fiscal_month, module_name)
 		);
 
 
@@ -598,10 +619,13 @@ create table if not exists ar_invoice_item(
 create table if not exists ar_receipt(
         company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
         entry_type_id varchar(3) default 'RRE',
-        rre_id serial primary key not null,
-		date DATE NOT NULL,		
-		rie_id integer not null,
-		customer_id char(6) check (customer_id ~ '[A-Z]{3}[0-9]{3}' )
+        rre_id serial primary key not null
+		, transaction_date DATE NOT NULL
+	    , fiscal_year INT 
+        , fiscal_month INT 
+		, module_name TEXT DEFAULT 'accounts_receivable' NOT NULL
+		, rie_id integer not null
+		, customer_id char(6) check (customer_id ~ '[A-Z]{3}[0-9]{3}' )
 		, created_at TIMESTAMPTZ DEFAULT NOW()
 		, updated_at TIMESTAMPTZ DEFAULT NOW(),
         CONSTRAINT fk_companyCode	
@@ -613,6 +637,9 @@ create table if not exists ar_receipt(
         CONSTRAINT fk_arinvoice
       	    FOREIGN KEY(rie_id) 
 	  		    REFERENCES ar_invoice(rie_id)	
+		, CONSTRAINT fk_fiscal_module
+  	    	FOREIGN KEY(fiscal_year, fiscal_month, module_name) 
+	  			REFERENCES fiscal_period_module_status(fiscal_year, fiscal_month, module_name)
    );
 
 create table if not exists ar_receipt_item(
@@ -643,10 +670,13 @@ create table if not exists ap_invoice(
         company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
         entry_type_id varchar(3) default 'PIE',
 	    pie_id serial primary key not null,
-        vendor_id char(5) check (vendor_id ~ '[A-Z]{2}[0-9]{3}' ) not null,
-		date DATE NOT NULL,
-        p_order_id integer references purchase_orders(p_order_id),
-        invoice_id varchar(10) not null
+        vendor_id char(5) check (vendor_id ~ '[A-Z]{2}[0-9]{3}' ) not null
+		, transaction_date DATE NOT NULL
+	    , fiscal_year INT 
+        , fiscal_month INT 
+		, module_name TEXT DEFAULT 'accounts_payable' NOT NULL
+        , p_order_id integer references purchase_orders(p_order_id)
+        , invoice_id varchar(10) not null
 		, created_at TIMESTAMPTZ DEFAULT NOW()
 		, updated_at TIMESTAMPTZ DEFAULT NOW(),
         CONSTRAINT fk_companyCode
@@ -658,6 +688,9 @@ create table if not exists ap_invoice(
 	    CONSTRAINT fk_vendor
           FOREIGN KEY(vendor_id) 
 	      REFERENCES vendors(vendor_id)
+		, CONSTRAINT fk_fiscal_module
+  	    	FOREIGN KEY(fiscal_year, fiscal_month, module_name) 
+	  		REFERENCES fiscal_period_module_status(fiscal_year, fiscal_month, module_name)
 	);
 		
 create table if not exists ap_invoice_item(
@@ -695,10 +728,13 @@ create table if not exists ap_invoice_item(
 create table if not exists ap_payment(
 		company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
         entry_type_id varchar(3) default 'PPE',
-		ppe_id serial primary key,
-		date DATE NOT NULL,
-		pie_id integer not null,
-        vendor_id char(5) check (vendor_id ~ '[A-Z]{2}[0-9]{3}' ) not null
+		ppe_id serial primary key
+		, transaction_date DATE NOT NULL
+		, fiscal_year INT 
+    	, fiscal_month INT 
+		, module_name TEXT DEFAULT 'accounts_payable' NOT NULL
+		, pie_id integer not null
+        , vendor_id char(5) check (vendor_id ~ '[A-Z]{2}[0-9]{3}' ) not null
 		, created_at TIMESTAMPTZ DEFAULT NOW()
 		, updated_at TIMESTAMPTZ DEFAULT NOW(),
         CONSTRAINT fk_companyCode
@@ -710,6 +746,9 @@ create table if not exists ap_payment(
 	    CONSTRAINT fk_apinvoice
             FOREIGN KEY(pie_id) 
 	            REFERENCES ap_invoice(pie_id)   
+		, CONSTRAINT fk_fiscal_module
+  	    	FOREIGN KEY(fiscal_year, fiscal_month, module_name) 
+	  			REFERENCES fiscal_period_module_status(fiscal_year, fiscal_month, module_name)
 	);
 	
 	

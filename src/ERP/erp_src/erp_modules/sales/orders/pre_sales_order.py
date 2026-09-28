@@ -3,14 +3,13 @@ import logging
 import os
 from pathlib import Path
 import csv
-from datetime import datetime
+import datetime
 from ERP.db.db_utilities import *
-from ERP.utilities.random_customer import *
+from ERP.db.ocean_pool import get_pool
+from ERP.utilities.file_io import create_csv
+from ERP.utilities.random_customer import get_business_types
 
 logger = logging.getLogger(__name__)
-
-project_root_folder = Path.resolve()
-made_data_fr_seed_random_folder = os.makedirs(project_root_folder/"src"/"ERP"/"data"/"master_data"/"made_data_fr_seed_random", exist_ok=True)
 
 # choose random date bwtween start and end date
 def randomdate(start_date, end_date):
@@ -22,44 +21,71 @@ def randomdate(start_date, end_date):
     return random_date
 
 
-def get_cust_ids_by_type(conn):
+def get_cust_ids_by_type():
     "Get a list of customer_ids by business_type and save in different csv files"
     business_types = get_business_types()
-    cust_ids_bt = {}
+    cust_ids_lst = []
     sql = """select customer_id from customer_names 
             where business_type_id= %s and company_code='US001';"""
-    for bt in business_types:
-        with conn.cursor() as curs:
-            curs.execute("set search_path to ocean_stream;")
-            curs.execute(sql, (bt,))  #cursor closed after the execute action
-            cust_ids = curs.fetchall()# a list of tuples
-            cust_ids_bt[bt].append(cust_ids)
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            for bt in business_types:
+                cur.execute(sql, (bt,))  #cursor closed after the execute action
+                cust_ids = cur.fetchall()# a list of tuples
+                cust_ids_lst.append(cust_ids)
 
-        with open(os.path.join(made_data_fr_seed_random_folder, f'cust_ids_{bt}'), 'w') as write_obj:
-            csv_writer = csv.writer(write_obj)
-            csv_writer.writerow(['customer_id']) # write header        
-            csv_writer.writerows(cust_ids)
-    logger.info(f'Customer_ids by type is written in {made_data_fr_seed_random_folder}')    
-    return cust_ids_bt  
+    #             with open(made_data_fr_seed_random_folder/(f'cust_ids_{bt}.csv'), 'w') as write_obj:
+    #                 csv_writer = csv.writer(write_obj)
+    #                 csv_writer.writerow(['customer_id']) # write header        
+    #                 csv_writer.writerows(cust_ids)
+    # logger.info(f'Customer_ids by type is written in {made_data_fr_seed_random_folder}')    
+    return cust_ids_lst  
 
-def generate_value_tuples(n_sample_b, n_sample_i, start_date, end_date,conn):
-    cust_ids_b, cust_ids_i = get_cust_ids_by_type(conn)            
+def generate_value_tuples(n_sample_b, n_sample_i, start_date, end_date):
+    cust_ids_b, cust_ids_i = get_cust_ids_by_type()            
     b_cust_ids_sample = random.sample(cust_ids_b, n_sample_b)
     i_cust_ids_sample = random.sample(cust_ids_i, n_sample_i)
-    random_cust_ids = b_cust_ids_sample + i_cust_ids_sample
-    n = n_sample_b + n_sample_i
-   
-    t = [('US001',randomdate(start_date, end_date),*random_cust_ids[i]) for i in range(n)]
-    return t
+    t_b = [('US001',randomdate(start_date, end_date),*b_cust_ids_sample[i]) for i in range(n_sample_b)]
+    t_i = [('US001',randomdate(start_date, end_date),*i_cust_ids_sample[i]) for i in range(n_sample_i)]
+    return t_b, t_i
 
-       
+def get_cust_ids_with_type(bu_type)->List[tuple]:
+    "Get a list of customer_ids by business_type and save in different csv files"
+    sql = """select customer_id from customer_names 
+            where business_type_id= %s and company_code='US001';"""
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (bu_type,))
+            cust_ids = cur.fetchall()# a list of tuples
+
+    return cust_ids
+
+def sales_order_value_tups_gen(bt_sample_size_lst, start_date, end_date):
+    bu_types = get_business_types()    
+    for bu_type in bu_types:
+        cust_ids = get_cust_ids_with_type(bu_type)
+        for _ in range(bt_sample_size_lst[bu_type - 1]):   #Business_tyoe start from 1, 1 id business, 2 is individule        
+            cust_id = random.choice(cust_ids)[0]
+            random_date = randomdate(start_date, end_date)
+            fiscal_year, fiscal_month = random_date.year, random_date.month
+            yield ('US001', random_date, fiscal_year, fiscal_month, cust_id)
+
 # generate sales order values and save in csv file, then upload to db from psql which is quicker comparing to below way.
-def _to_csv(n_sample_b, n_sample_i, start_date, end_date,conn, outfile):
-    tups = generate_value_tuples(n_sample_b, n_sample_i, start_date, end_date,conn)
-    with open(os.path.join(made_data_fr_seed_random_folder, outfile), 'w') as write_obj:
+def _to_csv(n_sample_b, n_sample_i, start_date, end_date, path):
+    t_b, t_i = generate_value_tuples(n_sample_b, n_sample_i, start_date, end_date)
+    with open(path/f'pre_sales_orders_business.csv', 'w') as write_obj:
         csv_writer = csv.writer(write_obj)
-        csv_writer.writerow(['company_code', 's_order_date', 'customer_id']) # write header
-        n = n_sample_b + n_sample_i
-        for i in range(n):
-            csv_writer.writerow(tups[i])
-        logger.info(f'{n_sample_b}  and {n_sample_i} pre_sales_orders writing')
+        csv_writer.writerow(['company_code', 's_order_date', 'fiscal_year', 'fiscal_month', 'customer_id']) # write header
+        for i in range(n_sample_b):
+            csv_writer.writerow(t_b[i])
+
+    with open(path/f'pre_sales_orders_individul.csv', 'w') as write_obj:
+        csv_writer = csv.writer(write_obj)
+        csv_writer.writerow(['company_code', 's_order_date', 'fiscal_year', 'fiscal_month', 'customer_id']) # write header
+        for j in range(n_sample_i):
+            csv_writer.writerow(t_i[j])
+    logger.info(f'{n_sample_b}  and {n_sample_i} pre_sales_orders writing')
+
+

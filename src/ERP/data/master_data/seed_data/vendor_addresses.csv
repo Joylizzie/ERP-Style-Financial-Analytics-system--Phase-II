@@ -1,0 +1,13 @@
+company_code,vendor_id,address_line1,address_line2,city,state,country,postcode,phone_number,email_address
+US001,VC001,140 Virginia Avenue,,Mountlake Terrace,WA,USA,98043,,wright@msn.com
+US001,SB001,197 Ridge Avenue,,Arlington,WA,USA,98223,,conrad@gmail.com
+US001,SG001,52 Hamilton Street,,Lynnwood,WA,USA,98037,,collins@yahoo.com
+US001,AT001,184 Church Street,,Sumner,OR,USA,98390,,smith@msnl.com
+US001,CO001,140 Valley Road,,Pateros,WA,USA,98846,,crawfor@hotmail.com
+US001,SM001,185 Belmont Avenue,,Vancouver,CA,USA,98683,,clark@gmail.com
+US001,GO001,198 Poplar Street,,Orient,WA,USA,99160,,watkins@hotmail.com
+US001,HH001,130 Jackson Street,,Seattle,WA,USA,98112,,taylor@gmail.com
+US001,AM001,155 Dogwood Drive,,Longview,WA,USA,98632,,william@hotmail.com
+US001,PP001,135 Valley Road,,Wallula,WA,USA,99363,,bradley@gmail.com
+US001,SF001,55 Main Street North,,Kirkland,WA,USA,98033,,sf@yahoo.com
+US001,GC001,99 Virginia Avenue,,Kirkland,WA,USA,98033,,gc@gc.com
