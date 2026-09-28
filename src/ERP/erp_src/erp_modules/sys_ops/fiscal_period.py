@@ -38,15 +38,3 @@ def close_fiscal_period(year, month):
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute(sql, (year, month))
-
-# def assert_postable(self, module_name: str, period_id: int):
-#     """Called before ANY posting (GL or subledger) — checks this exact
-#     (period, module) pair is the one currently open."""
-#     with self.conn.cursor() as cur:
-#         cur.execute("""
-#             SELECT status FROM fiscal_period_module_status
-#             WHERE period_id = %s AND module_name = %s
-#         """, (period_id, module_name))
-#         row = cur.fetchone()
-#         if row is None or row[0] != 'open':
-#             raise PermissionError(f"{module_name} period {period_id} is not open for posting")

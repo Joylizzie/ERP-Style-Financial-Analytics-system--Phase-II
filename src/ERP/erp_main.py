@@ -29,6 +29,7 @@ def initialize_pg_db():
     file_path = project_root_folder/"src"/"ERP"/"db"/"schema"/"triggers" # create triggers
     logger.info(f'file path is {file_path}')
     run_sql_file(file_path, "set_start_end_date_trigger.sql")
+    run_sql_file(file_path, "fiscal_period_open_close_trigger.sql")
     file_path = project_root_folder/"src"/"ERP"/"data"/"master_data"/"predefined_table_data"
     copy_folder_db(file_path)
 
