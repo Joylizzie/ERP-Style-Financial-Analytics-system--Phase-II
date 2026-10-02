@@ -369,6 +369,22 @@ create table if not exists products (
 	  		REFERENCES currencies(currency_id)
     );
 
+create table if not exists product_mix_weights (
+	pm_id integer not null
+	, weight numeric
+	, fiscal_year integer 
+	, fiscal_month integer
+	, PRIMARY KEY(pm_id, fiscal_year, fiscal_month)
+)
+
+create table if not exists product_mix(
+	, pm_id integer references product_weights(pm_id) not null
+	, product_id integer references products(product_id) not null
+	, business_type_id integer references business_type(business_type_id) not null
+	, PRIMARY KEY (pm_id, product_id, business_type_id)
+
+)
+
 create table if not exists purchase_orders (
 	company_code char(5) check (company_code ~ '[A-Z]{2}[0-9]{3}' ) not null,
 	p_order_id serial primary key,

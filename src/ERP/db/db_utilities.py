@@ -56,6 +56,20 @@ def run_sql_file_autocommit(file_path, filename, pool=None):
 
     logger.info(f'Executed sql in {file_path/filename}')
 
+# just run a given sql with parameters and return a list of tuples
+def run_sql(sql, params=(), pool=None):
+    if pool is None:
+        pool = get_pool()    
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, params)
+    except: 
+        logger.error
+        raise 
+    logger.info(f'Executed sql')
+
+
 # Operations in the new db, use this
 def run_sql_file(file_path, filename, pool=None):
     if pool is None:
