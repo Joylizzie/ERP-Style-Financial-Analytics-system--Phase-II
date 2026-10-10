@@ -1,8 +1,9 @@
 import random
 from pathlib import Path
 import string
-from ERP.utilities.file_io import read_csv_row_generator
-from ERP.utilities.random_gen_generator import random_string, make_random_firstnames, \
+from ERP.db.db_utilities import run_sql_get
+from ERP.erp_src.utilities.file_io import read_csv_row_generator
+from ERP.erp_src.utilities.random_gen_generator import random_string, make_random_firstnames, \
        make_random_surnames, make_random_cities, make_random_email_domains, make_random_streets, make_phone_numbers
 
 project_root_folder = Path().resolve()
@@ -28,7 +29,12 @@ def make_customer_ids(n):
         yield customer_id
 
 def get_business_types():
-    return [1,2] # todo: get from postgres
+    sql = """select business_type_id from business_type where company_code = 'US001'"""
+    business_type_ids_tup_lst = run_sql_get(sql, params=())
+    business_type_id_lst = []
+    for business_type_id_tup in business_type_ids_tup_lst:
+        business_type_id_lst.append(business_type_id_tup[0])
+    return business_type_id_lst
 
 def make_customer_names(n):
 

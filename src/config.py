@@ -42,3 +42,6 @@ initial_num_customer_to_gen = int(os.getenv("initial_num_customer_to_gen"))
 initial_num_bus_customer_to_gen = int(os.getenv("initial_num_bus_customer_to_gen"))
 initial_num_ind_customer_to_gen = int(os.getenv("initial_num_ind_customer_to_gen"))
 
+# product mix random monthly change range
+product_mix_random_mult_lower=0.98
+product_mix_random_mult_higher=1.02
