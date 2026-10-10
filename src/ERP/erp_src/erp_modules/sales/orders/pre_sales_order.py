@@ -4,10 +4,11 @@ import os
 from pathlib import Path
 import csv
 import datetime
+import config as conf
 from ERP.db.db_utilities import *
 from ERP.db.ocean_pool import get_pool
-from ERP.utilities.file_io import create_csv
-from ERP.utilities.random_customer import get_business_types
+from ERP.erp_src.utilities.file_io import create_csv
+from ERP.erp_src.utilities.random_customer import get_business_types
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +35,7 @@ def get_cust_ids_by_type():
                 cur.execute(sql, (bt,))  #cursor closed after the execute action
                 cust_ids = cur.fetchall()# a list of tuples
                 cust_ids_lst.append(cust_ids)
-
-    #             with open(made_data_fr_seed_random_folder/(f'cust_ids_{bt}.csv'), 'w') as write_obj:
-    #                 csv_writer = csv.writer(write_obj)
-    #                 csv_writer.writerow(['customer_id']) # write header        
-    #                 csv_writer.writerows(cust_ids)
-    # logger.info(f'Customer_ids by type is written in {made_data_fr_seed_random_folder}')    
+  
     return cust_ids_lst  
 
 def generate_value_tuples(n_sample_b, n_sample_i, start_date, end_date):
@@ -62,11 +58,18 @@ def get_cust_ids_with_type(bu_type)->List[tuple]:
 
     return cust_ids
 
-def sales_order_value_tups_gen(bt_sample_size_lst, start_date, end_date):
+def bt_sample_size(bu_type, start_date, end_date):
+    if bu_type == 1:
+        return conf.initial_num_bus_customer_to_gen
+    else:
+        return conf.initial_num_ind_customer_to_gen
+
+def sales_order_value_tups_gen(start_date, end_date):
     bu_types = get_business_types()    
     for bu_type in bu_types:
         cust_ids = get_cust_ids_with_type(bu_type)
-        for _ in range(bt_sample_size_lst[bu_type - 1]):   #Business_tyoe start from 1, 1 id business, 2 is individule        
+        sample_size = bt_sample_size((bu_type - 1), start_date, end_date)
+        for _ in range(sample_size):   #Business_type start from 1, 1 id business, 2 is individule        
             cust_id = random.choice(cust_ids)[0]
             random_date = randomdate(start_date, end_date)
             fiscal_year, fiscal_month = random_date.year, random_date.month

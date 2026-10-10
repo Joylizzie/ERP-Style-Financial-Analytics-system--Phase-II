@@ -5,11 +5,12 @@ from pathlib import Path
 from ERP.db.ocean_pool import create_pool
 from ERP.db import create_db_and_user
 from ERP.db.db_utilities import drain_pool, run_sql_db_user, run_sql_file_autocommit, run_sql_file, copy_file_to_db, copy_from_db_file, copy_folder_db, copy_generator_tup_to_db
-from ERP.utilities.random_customer import make_customer_names, make_customer_addresses
-from ERP.utilities.file_io import create_csv
+from ERP.erp_src.utilities.random_customer import make_customer_names, make_customer_addresses
+from ERP.erp_src.utilities.file_io import create_csv
 import config as conf
 # from config import start_date, end_date, fresh_start, make_monthly_adj, initial_num_customer_to_gen
 from ERP.erp_src.erp_modules.sales.orders.pre_sales_order import sales_order_value_tups_gen
+from ERP.erp_src.erp_modules.sales.orders.pre_sales_orders_items_b import sales_order_item_value_tuples_gen
 import ERP.erp_src.erp_modules.sys_ops.fiscal_period as fs
 
 logger = logging.getLogger(__name__)
@@ -55,12 +56,17 @@ def gen_everymon_data(year, month):
     # Generate sales_orders by customer_ids in "year, month"
     cur_start_date = date(year, month, 1)
     cur_end_date = date(year, month, calendar.monthrange(year, month)[1]) # the end of the month
-    sales_order_ids_gen = sales_order_value_tups_gen([conf.initial_num_bus_customer_to_gen,\
-           conf.initial_num_ind_customer_to_gen], cur_start_date, cur_end_date)
+    sales_order_ids_gen = sales_order_value_tups_gen(cur_start_date, cur_end_date)
     table_cols = ['company_code', 's_order_date', 'fiscal_year', 'fiscal_month', 'customer_id']
     logger.info(f"start to upload {year}-{month} sales_order_ids ")
     copy_generator_tup_to_db(sales_order_ids_gen, "sales_orders", table_cols)
-    logger.info(f"Finished uploading {conf.initial_num_bus_customer_to_gen} and {conf.initial_num_ind_customer_to_gen} in {year}-{month} sales_order_ids")
+    logger.info(f"Finished uploading sales_order_ids in {year}-{month} sales_order_ids")
+    # generate items for each sales_order_ids
+    table_cols = ['company_code','sales_order_id', 'product_id', 'units', 'unit_selling_price', 'currency_id', 'tax_code', 'shipped']
+    business_type_id = 1
+    sales_order_id_items_gen = sales_order_item_value_tuples_gen(business_type_id, cur_start_date, cur_end_date)
+    copy_generator_tup_to_db(sales_order_id_items_gen, "sales_orders_items", table_cols)
+    logger.info(f"Finished uploading business_tye_id {business_type_id}  in {year}-{month} sales_order_id_items")
 
 def gen_data_for_month(year, month):
     """ Create the fiscal period, module status;

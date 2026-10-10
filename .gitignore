@@ -1,3 +1,7 @@
+src/ERP/data/master_data/made_data_fr_seed_random/
+src/ERP/reporting_results/phase_I_results
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -196,4 +200,3 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-src/ERP/data/master_data/made_data_fr_seed_random/

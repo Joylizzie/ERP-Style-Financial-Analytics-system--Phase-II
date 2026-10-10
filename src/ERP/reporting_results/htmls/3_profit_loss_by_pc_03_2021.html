@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>profit and loss during Mar-2021</title>
+    <style>
+      html, body {
+        box-sizing: border-box;
+        display: flow-root;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.10.0.min.js"></script>
+<script>
+Bokeh.set_log_level("info");
+</script>
+  </head>
+  <body>
+    <div id="b06bf05c-f156-400f-873c-1dbd0802824a" data-root-id="p1014" style="display: contents;"></div>
+  
+    <script type="application/json" id="c1d9b13a-6e36-4e8a-929c-4cbb77187618">
+      {"c586eff5-4e44-4162-85df-e519e3743444":{"version":"3.10.0","title":"Bokeh Application","config":{"type":"object","name":"DocumentConfig","id":"p1067","attributes":{"notifications":{"type":"object","name":"Notifications","id":"p1068"}}},"roots":[{"type":"object","name":"Figure","id":"p1014","attributes":{"width":550,"height":500,"x_range":{"type":"object","name":"FactorRange","id":"p1024","attributes":{"factors":["consulting_KG","consulting_OY","consulting_SE","consulting_SP","hardware_server_KG","hardware_server_OY","hardware_server_SE","hardware_server_SP","paas_KG","paas_OY","paas_SE","paas_SP","saas_KG","saas_OY","saas_SE","saas_SP","administration_department","marketing_department"]}},"y_range":{"type":"object","name":"DataRange1d","id":"p1016"},"x_scale":{"type":"object","name":"CategoricalScale","id":"p1025"},"y_scale":{"type":"object","name":"LinearScale","id":"p1026"},"title":{"type":"object","name":"Title","id":"p1017","attributes":{"text":"Profit and loss by profit centre"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1053","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1006","attributes":{"selected":{"type":"object","name":"Selection","id":"p1007","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1008"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/w3DiQ2AIBAAsBtDkFcF99+QNukVEcnsbbHa7A6nj6+fy+3vAZ00DWdAAAAA"},"shape":[16],"dtype":"int32","order":"little"}],["company_code",{"type":"ndarray","array":["US001","US001","US001","US001","US001","US001","US001","US001","US001","US001","US001","US001","US001","US001","US001","US001"],"shape":[16],"dtype":"object","order":"little"}],["sub_name",{"type":"ndarray","array":["Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue","Revenue"],"shape":[16],"dtype":"object","order":"little"}],["profit_centre",{"type":"ndarray","array":["consulting_KG","consulting_OY","consulting_SE","consulting_SP","hardware_server_KG","hardware_server_OY","hardware_server_SE","hardware_server_SP","paas_KG","paas_OY","paas_SE","paas_SP","saas_KG","saas_OY","saas_SE","saas_SP"],"shape":[16],"dtype":"object","order":"little"}],["currency_id",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/2NkYGBgpAADAEmhaTxAAAAA"},"shape":[16],"dtype":"int32","order":"little"}],["amount",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/2NgYGBQOCXqCKQYatSMwHSChzWYnmAiC6YbWvjA9IfNVhD5x2ZQcT0wbcApBKYV/qiC6T0TIOZc6JIA82/oeoDpJS7lYFreuxZMf7ma7ggAspOmqYAAAAA="},"shape":[16],"dtype":"float64","order":"little"}]]}}},"view":{"type":"object","name":"CDSView","id":"p1054","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1055"}}},"glyph":{"type":"object","name":"VBar","id":"p1050","attributes":{"x":{"type":"field","field":"profit_centre"},"width":{"type":"value","value":0.8},"top":{"type":"field","field":"amount"},"line_color":{"type":"value","value":"blue"},"fill_color":{"type":"value","value":"blue"},"hatch_color":{"type":"value","value":"blue"}}},"nonselection_glyph":{"type":"object","name":"VBar","id":"p1051","attributes":{"x":{"type":"field","field":"profit_centre"},"width":{"type":"value","value":0.8},"top":{"type":"field","field":"amount"},"line_color":{"type":"value","value":"blue"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"value","value":"blue"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"value","value":"blue"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"VBar","id":"p1052","attributes":{"x":{"type":"field","field":"profit_centre"},"width":{"type":"value","value":0.8},"top":{"type":"field","field":"amount"},"line_color":{"type":"value","value":"blue"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"value","value":"blue"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"value","value":"blue"},"hatch_alpha":{"type":"value","value":0.2}}}}},{"type":"object","name":"GlyphRenderer","id":"p1061","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1009","attributes":{"selected":{"type":"object","name":"Selection","id":"p1010","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1011"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/xNgYGAQBGIhIBYGYhEgFgViMSAWB2IAK/0xJiAAAAA="},"shape":[8],"dtype":"int32","order":"little"}],["company_code",{"type":"ndarray","array":["US001","US001","US001","US001","US001","US001","US001","US001"],"shape":[8],"dtype":"object","order":"little"}],["sub_name",{"type":"ndarray","array":["Expenses","Expenses","Expenses","Expenses","Expenses","Expenses","Expenses","Expenses"],"shape":[8],"dtype":"object","order":"little"}],["profit_centre",{"type":"ndarray","array":["administration_department","consulting_KG","marketing_department","paas_KG","paas_OY","paas_SE","paas_SP","saas_KG"],"shape":[8],"dtype":"object","order":"little"}],["currency_id",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/2NkYGBgxIMBfkn8TCAAAAA="},"shape":[8],"dtype":"int32","order":"little"}],["amount",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/2NgYGDgmWXrCKQYHpwwANMJj8NAdIPhxWQw/895VzBdEWAJpltehoDpBn8nRwCEgF6sQAAAAA=="},"shape":[8],"dtype":"float64","order":"little"}]]}}},"view":{"type":"object","name":"CDSView","id":"p1062","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1063"}}},"glyph":{"type":"object","name":"VBar","id":"p1058","attributes":{"x":{"type":"field","field":"profit_centre"},"width":{"type":"value","value":0.9},"top":{"type":"field","field":"amount"},"line_color":{"type":"value","value":"red"},"fill_color":{"type":"value","value":"red"},"hatch_color":{"type":"value","value":"red"}}},"nonselection_glyph":{"type":"object","name":"VBar","id":"p1059","attributes":{"x":{"type":"field","field":"profit_centre"},"width":{"type":"value","value":0.9},"top":{"type":"field","field":"amount"},"line_color":{"type":"value","value":"red"},"line_alpha":{"type":"value","value":0.1},"fill_color":{"type":"value","value":"red"},"fill_alpha":{"type":"value","value":0.1},"hatch_color":{"type":"value","value":"red"},"hatch_alpha":{"type":"value","value":0.1}}},"muted_glyph":{"type":"object","name":"VBar","id":"p1060","attributes":{"x":{"type":"field","field":"profit_centre"},"width":{"type":"value","value":0.9},"top":{"type":"field","field":"amount"},"line_color":{"type":"value","value":"red"},"line_alpha":{"type":"value","value":0.2},"fill_color":{"type":"value","value":"red"},"fill_alpha":{"type":"value","value":0.2},"hatch_color":{"type":"value","value":"red"},"hatch_alpha":{"type":"value","value":0.2}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1023","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1037"},{"type":"object","name":"WheelZoomTool","id":"p1038","attributes":{"renderers":"auto"}},{"type":"object","name":"BoxZoomTool","id":"p1039","attributes":{"overlay":{"type":"object","name":"BoxAnnotation","id":"p1040","attributes":{"syncable":false,"line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5,"level":"overlay","visible":false,"left":{"type":"number","value":"nan"},"right":{"type":"number","value":"nan"},"top":{"type":"number","value":"nan"},"bottom":{"type":"number","value":"nan"},"left_units":"canvas","right_units":"canvas","top_units":"canvas","bottom_units":"canvas","handles":{"type":"object","name":"BoxInteractionHandles","id":"p1046","attributes":{"all":{"type":"object","name":"AreaVisuals","id":"p1045","attributes":{"fill_color":"white","hover_fill_color":"lightgray"}}}}}}}},{"type":"object","name":"SaveTool","id":"p1047"},{"type":"object","name":"ResetTool","id":"p1048"},{"type":"object","name":"HelpTool","id":"p1049"},{"type":"object","name":"HoverTool","id":"p1065","attributes":{"renderers":"auto","tooltips":[["company_code","@company_code"],["profit_centre","@profit_centre"],["amount","@amount"]],"sort_by":null,"mode":"vline"}}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1032","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1033","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"NumeralTickFormatter","id":"p1066","attributes":{"format":"$\u20180 a\u2019"}},"axis_label":"Amount","axis_label_text_font_style":"bold","major_label_policy":{"type":"object","name":"AllLabels","id":"p1035"}}}],"below":[{"type":"object","name":"CategoricalAxis","id":"p1027","attributes":{"ticker":{"type":"object","name":"CategoricalTicker","id":"p1028"},"formatter":{"type":"object","name":"CategoricalTickFormatter","id":"p1029"},"axis_label":"Profit centres","axis_label_text_font_size":"12pt","axis_label_text_font_style":"bold","major_label_orientation":0.7853981633974483,"major_label_policy":{"type":"object","name":"AllLabels","id":"p1030"}}}],"center":[{"type":"object","name":"Grid","id":"p1031","attributes":{"axis":{"id":"p1027"}}},{"type":"object","name":"Grid","id":"p1036","attributes":{"dimension":1,"axis":{"id":"p1032"}}},{"type":"object","name":"Legend","id":"p1056","attributes":{"orientation":"horizontal","label_text_font_size":"8pt","items":[{"type":"object","name":"LegendItem","id":"p1057","attributes":{"label":{"type":"value","value":"Revenue"},"renderers":[{"id":"p1053"}]}},{"type":"object","name":"LegendItem","id":"p1064","attributes":{"label":{"type":"value","value":"Expenses"},"renderers":[{"id":"p1061"}]}}]}}]}}]}}
+    </script>
+    <script>
+      (function() {
+        const fn = function() {
+          Bokeh.safely(function() {
+            (function(root) {
+              function embed_document(root) {
+              const docs_json = document.getElementById('c1d9b13a-6e36-4e8a-929c-4cbb77187618').textContent;
+              const render_items = [{"docid":"c586eff5-4e44-4162-85df-e519e3743444","roots":{"p1014":"b06bf05c-f156-400f-873c-1dbd0802824a"},"root_ids":["p1014"]}];
+              root.Bokeh.embed.embed_items(docs_json, render_items);
+              }
+              if (root.Bokeh !== undefined) {
+                embed_document(root);
+              } else {
+                let attempts = 0;
+                const timer = setInterval(function(root) {
+                  if (root.Bokeh !== undefined) {
+                    clearInterval(timer);
+                    embed_document(root);
+                  } else {
+                    attempts++;
+                    if (attempts > 100) {
+                      clearInterval(timer);
+                      console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                    }
+                  }
+                }, 10, root)
+              }
+            })(window);
+          });
+        };
+        if (document.readyState != "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      })();
+    </script>
+  </body>
+</html>

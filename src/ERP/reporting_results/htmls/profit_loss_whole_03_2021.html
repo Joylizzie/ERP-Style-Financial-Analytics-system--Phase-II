@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>profit and loss during Mar-2021</title>
+    <style>
+      html, body {
+        box-sizing: border-box;
+        display: flow-root;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-3.10.0.min.js"></script>
+<script>
+Bokeh.set_log_level("info");
+</script>
+  </head>
+  <body>
+    <div id="a043e2d0-777c-478f-b4eb-ece36d9c5752" data-root-id="p1009" style="display: contents;"></div>
+  
+    <script type="application/json" id="d577be33-115c-46d6-8c74-c6aef997f58e">
+      {"c949cfc8-080b-4d6f-9329-b370d6ef8aff":{"version":"3.10.0","title":"Bokeh Application","config":{"type":"object","name":"DocumentConfig","id":"p1060","attributes":{"notifications":{"type":"object","name":"Notifications","id":"p1061"}}},"roots":[{"type":"object","name":"Figure","id":"p1009","attributes":{"width":800,"x_range":{"type":"object","name":"FactorRange","id":"p1019","attributes":{"factors":["Revenue","Cost of goods sold","Travel expense","Marketing expense","Rental","Unitilities","Office supplies","Insurance","Net_profit"]}},"y_range":{"type":"object","name":"Range1d","id":"p1020","attributes":{"end":85814925.0}},"x_scale":{"type":"object","name":"CategoricalScale","id":"p1021"},"y_scale":{"type":"object","name":"LinearScale","id":"p1022"},"title":{"type":"object","name":"Title","id":"p1012","attributes":{"text":"Ocean Stream (US) P&amp;L Waterfall - Mar 2021"}},"renderers":[{"type":"object","name":"GlyphRenderer","id":"p1050","attributes":{"data_source":{"type":"object","name":"ColumnDataSource","id":"p1006","attributes":{"selected":{"type":"object","name":"Selection","id":"p1007","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1008"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":["Revenue","Cost of goods sold","Travel expense","Marketing expense","Rental","Unitilities","Office supplies","Insurance","Net_profit"],"shape":[9],"dtype":"object","order":"little"}],["amount",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/2NgYLjgXzPZkYGB4YF1aN1BIN2gzlAEohkSHoeB6fXmIWB6xmslML3ggyaYdpjKBqIfcDsWOgIAYzOp+kgAAAA="},"shape":[9],"dtype":"float64","order":"little"}],["running_total",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/2NgYLjgXzPZkYGBYQPjuXYQ/eD27Fowzfy4HEQrSFwtAtEJu20htFleIVie2xFBAwDx8jabSAAAAA=="},"shape":[9],"dtype":"float64","order":"little"}],["y_start",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/2NggIML/jWTHYG8DYzn2kH0g9uza8E08+NyEK0gcbUIRCfstoXQZnmFID4YAACMVhV4SAAAAA=="},"shape":[9],"dtype":"float64","order":"little"}],["label_pos",{"type":"ndarray","array":{"type":"bytes","data":"H4sIAAEAAAAA/2NgYLjgXzPZkYGBYQPjuXYQ/eD27Fowzfy4HEQrSFwtAtEJu20htFleIVie2xFBAwDx8jabSAAAAA=="},"shape":[9],"dtype":"float64","order":"little"}],["color",{"type":"ndarray","array":["green","red","red","red","red","red","red","red","green"],"shape":[9],"dtype":"object","order":"little"}],["bar_label",{"type":"ndarray","array":["81.73M","-31.81M","-18.88M","-6.00M","-5.30M","-619.98K","-850.00K","-185.00K","18.09M"],"shape":[9],"dtype":"object","order":"little"}]]}}},"view":{"type":"object","name":"CDSView","id":"p1051","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1052"}}},"glyph":{"type":"object","name":"Segment","id":"p1047","attributes":{"x0":{"type":"field","field":"index"},"y0":{"type":"field","field":"y_start"},"x1":{"type":"field","field":"index"},"y1":{"type":"field","field":"running_total"},"line_color":{"type":"field","field":"color"},"line_width":{"type":"value","value":40}}},"nonselection_glyph":{"type":"object","name":"Segment","id":"p1048","attributes":{"x0":{"type":"field","field":"index"},"y0":{"type":"field","field":"y_start"},"x1":{"type":"field","field":"index"},"y1":{"type":"field","field":"running_total"},"line_color":{"type":"field","field":"color"},"line_alpha":{"type":"value","value":0.1},"line_width":{"type":"value","value":40}}},"muted_glyph":{"type":"object","name":"Segment","id":"p1049","attributes":{"x0":{"type":"field","field":"index"},"y0":{"type":"field","field":"y_start"},"x1":{"type":"field","field":"index"},"y1":{"type":"field","field":"running_total"},"line_color":{"type":"field","field":"color"},"line_alpha":{"type":"value","value":0.2},"line_width":{"type":"value","value":40}}}}}],"toolbar":{"type":"object","name":"Toolbar","id":"p1018","attributes":{"tools":[{"type":"object","name":"PanTool","id":"p1033"},{"type":"object","name":"WheelZoomTool","id":"p1034","attributes":{"renderers":"auto"}},{"type":"object","name":"BoxZoomTool","id":"p1035","attributes":{"overlay":{"type":"object","name":"BoxAnnotation","id":"p1036","attributes":{"syncable":false,"line_color":"black","line_alpha":1.0,"line_width":2,"line_dash":[4,4],"fill_color":"lightgrey","fill_alpha":0.5,"level":"overlay","visible":false,"left":{"type":"number","value":"nan"},"right":{"type":"number","value":"nan"},"top":{"type":"number","value":"nan"},"bottom":{"type":"number","value":"nan"},"left_units":"canvas","right_units":"canvas","top_units":"canvas","bottom_units":"canvas","handles":{"type":"object","name":"BoxInteractionHandles","id":"p1042","attributes":{"all":{"type":"object","name":"AreaVisuals","id":"p1041","attributes":{"fill_color":"white","hover_fill_color":"lightgray"}}}}}}}},{"type":"object","name":"SaveTool","id":"p1043"},{"type":"object","name":"ResetTool","id":"p1044"},{"type":"object","name":"HelpTool","id":"p1045"},{"type":"object","name":"HoverTool","id":"p1046","attributes":{"renderers":"auto","tooltips":[["label","@index"],["Amount","@bar_label"]],"sort_by":null,"mode":"vline"}}]}},"left":[{"type":"object","name":"LinearAxis","id":"p1028","attributes":{"ticker":{"type":"object","name":"BasicTicker","id":"p1029","attributes":{"mantissas":[1,2,5]}},"formatter":{"type":"object","name":"NumeralTickFormatter","id":"p1053","attributes":{"format":"($ 0 a)"}},"axis_label_text_font_style":"bold","major_label_policy":{"type":"object","name":"AllLabels","id":"p1031"}}}],"below":[{"type":"object","name":"CategoricalAxis","id":"p1023","attributes":{"ticker":{"type":"object","name":"CategoricalTicker","id":"p1024"},"formatter":{"type":"object","name":"CategoricalTickFormatter","id":"p1025"},"axis_label":"Breakdown of profit and loss","axis_label_text_font_size":"12pt","axis_label_text_font_style":"bold","major_label_orientation":0.7853981633974483,"major_label_policy":{"type":"object","name":"AllLabels","id":"p1026"}}}],"center":[{"type":"object","name":"Grid","id":"p1027","attributes":{"axis":{"id":"p1023"},"grid_line_alpha":0.3}},{"type":"object","name":"Grid","id":"p1032","attributes":{"dimension":1,"axis":{"id":"p1028"},"grid_line_alpha":0.3}},{"type":"object","name":"LabelSet","id":"p1054","attributes":{"level":"glyph","source":{"id":"p1006"},"x":{"type":"field","field":"df.index"},"y":{"type":"field","field":"label_pos"},"text":{"type":"field","field":"bar_label"},"x_offset":{"type":"value","value":-50},"y_offset":{"type":"value","value":5000000},"text_font_size":{"type":"value","value":"10pt"}}}]}}]}}
+    </script>
+    <script>
+      (function() {
+        const fn = function() {
+          Bokeh.safely(function() {
+            (function(root) {
+              function embed_document(root) {
+              const docs_json = document.getElementById('d577be33-115c-46d6-8c74-c6aef997f58e').textContent;
+              const render_items = [{"docid":"c949cfc8-080b-4d6f-9329-b370d6ef8aff","roots":{"p1009":"a043e2d0-777c-478f-b4eb-ece36d9c5752"},"root_ids":["p1009"]}];
+              root.Bokeh.embed.embed_items(docs_json, render_items);
+              }
+              if (root.Bokeh !== undefined) {
+                embed_document(root);
+              } else {
+                let attempts = 0;
+                const timer = setInterval(function(root) {
+                  if (root.Bokeh !== undefined) {
+                    clearInterval(timer);
+                    embed_document(root);
+                  } else {
+                    attempts++;
+                    if (attempts > 100) {
+                      clearInterval(timer);
+                      console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                    }
+                  }
+                }, 10, root)
+              }
+            })(window);
+          });
+        };
+        if (document.readyState != "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      })();
+    </script>
+  </body>
+</html>

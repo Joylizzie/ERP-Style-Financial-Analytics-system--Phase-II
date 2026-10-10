@@ -56,6 +56,36 @@ def run_sql_file_autocommit(file_path, filename, pool=None):
 
     logger.info(f'Executed sql in {file_path/filename}')
 
+# just run a given sql with parameters and return a list of tuples
+def run_sql(sql, params=(), pool=None):
+    """Using pool to connecting db to execute query """
+    if pool is None:
+        pool = get_pool()    
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, params)
+    except: 
+        logger.error
+        raise 
+    logger.info(f'Executed sql')
+
+# just run a given sql with parameters and return a list of tuples
+def run_sql_get(sql, params=(), pool=None):
+    if pool is None:
+        pool = get_pool()    
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, params)
+                res = cur.fetchall()
+    except: 
+        logger.error
+        raise 
+    logger.info(f'Executed sql')
+    return res
+
+
 # Operations in the new db, use this
 def run_sql_file(file_path, filename, pool=None):
     if pool is None:
@@ -153,15 +183,6 @@ def copy_from_db_file(path_file_name:Path, sql_query:str, pool:ConnectionPool=No
         logger.error(f"Error occurring during copy {path_file_name}: {e}")
         raise e
 
-def run_sql_get_from_db_tup(sql, *args):
-    if pool is None:
-        pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql, args)  
-            query_res = cur.fetchall()# a list of tuples
-    return query_res
-
 def copy_generator_tup_to_db(gen_tup, table_name:str, table_cols:List, pool:ConnectionPool=None):
     """Copy a generator of tuples to Postgres with a pool of connections"""
 
@@ -204,3 +225,16 @@ def copy_tup_from_db(sql_query:str, *args: Any, pool:ConnectionPool=None):
     except Exception as e:
         logger.error(f"Error occurring during copy from db: {e}")
         raise e
+
+def insert_small_data_to_db(sql_squery, params, pool:ConnectionPool=None):
+    if pool is None:
+        pool = get_pool()
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.executemany(sql_squery, params)
+                            
+    except Exception as e:
+        logger.error(f"Error occurring during copy from db: {e}")
+        raise e    
+        
