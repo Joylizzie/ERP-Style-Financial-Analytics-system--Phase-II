@@ -9,8 +9,8 @@ from ERP.erp_src.utilities.random_customer import make_customer_names, make_cust
 from ERP.erp_src.utilities.file_io import create_csv
 import config as conf
 # from config import start_date, end_date, fresh_start, make_monthly_adj, initial_num_customer_to_gen
-from ERP.erp_src.erp_modules.sales.orders.pre_sales_order import sales_order_value_tups_gen
-from ERP.erp_src.erp_modules.sales.orders.pre_sales_orders_items_b import sales_order_item_value_tuples_gen
+from ERP.erp_src.erp_modules.sales.orders.pre_sales_order import get_business_types,sales_order_value_tups_gen
+from ERP.erp_src.erp_modules.sales.orders.pre_sales_orders_items import sales_order_item_value_tuples_gen
 import ERP.erp_src.erp_modules.sys_ops.fiscal_period as fs
 
 logger = logging.getLogger(__name__)
@@ -63,9 +63,11 @@ def gen_everymon_data(year, month):
     logger.info(f"Finished uploading sales_order_ids in {year}-{month} sales_order_ids")
     # generate items for each sales_order_ids
     table_cols = ['company_code','sales_order_id', 'product_id', 'units', 'unit_selling_price', 'currency_id', 'tax_code', 'shipped']
-    business_type_id = 1
-    sales_order_id_items_gen = sales_order_item_value_tuples_gen(business_type_id, cur_start_date, cur_end_date)
-    copy_generator_tup_to_db(sales_order_id_items_gen, "sales_orders_items", table_cols)
+    business_type_ids = get_business_types()
+    for business_type_id in business_type_ids:
+    # business_type_id = 1
+        sales_order_id_items_gen = sales_order_item_value_tuples_gen(business_type_id, cur_start_date, cur_end_date)
+        copy_generator_tup_to_db(sales_order_id_items_gen, "sales_orders_items", table_cols)
     logger.info(f"Finished uploading business_tye_id {business_type_id}  in {year}-{month} sales_order_id_items")
 
 def gen_data_for_month(year, month):

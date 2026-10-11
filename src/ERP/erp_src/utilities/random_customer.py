@@ -31,11 +31,8 @@ def make_customer_ids(n):
 def get_business_types():
     sql = """select business_type_id from business_type where company_code = 'US001'"""
     business_type_ids_tup_lst = run_sql_get(sql, params=())
-    business_type_id_lst = []
-    for business_type_id_tup in business_type_ids_tup_lst:
-        business_type_id_lst.append(business_type_id_tup[0])
-    return business_type_id_lst
-
+    return [bt_id_tup[0] for bt_id_tup in business_type_ids_tup_lst ]
+ 
 def make_customer_names(n):
 
     """ Columns need to be generated in table customer_name for company_code US001:

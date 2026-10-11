@@ -73,6 +73,7 @@ def sales_order_value_tups_gen(start_date, end_date):
             cust_id = random.choice(cust_ids)[0]
             random_date = randomdate(start_date, end_date)
             fiscal_year, fiscal_month = random_date.year, random_date.month
+            
             yield ('US001', random_date, fiscal_year, fiscal_month, cust_id)
 
 # generate sales order values and save in csv file, then upload to db from psql which is quicker comparing to below way.

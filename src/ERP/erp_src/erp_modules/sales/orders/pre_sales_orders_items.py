@@ -23,7 +23,7 @@ random.seed(5)
 #     conn.autocommit = False
 #     return conn
 
-def get_so_ids_b(business_type_id, start_date, end_date):
+def get_so_ids(business_type_id, start_date, end_date):
     """ get sales order ids placed by business"""
     sql_so_b = """ select so.sales_order_id from sales_orders as so
             inner join customer_names as cn
@@ -35,7 +35,7 @@ def get_so_ids_b(business_type_id, start_date, end_date):
     params_dict = {'business_type_id':business_type_id,'start_date':start_date, 'end_date':end_date}
     sales_order_id = run_sql_get(sql_so_b, params_dict)
 
-    logger.info(f'There are {len(sales_order_id)} generated') 
+    logger.info(f'There are {len(sales_order_id)} retrieved from db') 
     return sales_order_id
 
 
@@ -47,7 +47,7 @@ def get_product_id_price():
     return product_id_price
     
           
-def so_items_b(so_id, selling_prices_dict, pm_dict, pm_weight):
+def so_items(so_id, selling_prices_dict, pm_dict, pm_weight):
     """ '1' is business_type_id for business. generate item(s) for a single sales order which placed by business
     get a product_mix by weight"""
     #TODO change to parameters 
@@ -82,8 +82,8 @@ def sales_order_item_value_tuples_gen(business_type_id, start_date, end_date):
     pm_dict = pro_mix.get_product_mix_lst(business_type_id)
     pm_weight = tuple(zip(*(pro_mix.get_cum_weights(fiscal_year, fiscal_month, business_type_id))))
     selling_prices_dict = dict(get_product_id_price())
-    so_ids = get_so_ids_b(business_type_id, start_date, end_date)
-    lol = (so_items_b(so_id_b[0], selling_prices_dict, pm_dict, pm_weight) for so_id_b in so_ids)
+    so_ids = get_so_ids(business_type_id, start_date, end_date)
+    lol = (so_items(so_id_b[0], selling_prices_dict, pm_dict, pm_weight) for so_id_b in so_ids)
 
     return list(itertools.chain(*lol))
     

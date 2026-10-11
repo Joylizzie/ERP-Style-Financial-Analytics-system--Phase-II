@@ -1,5 +1,6 @@
 src/ERP/data/master_data/made_data_fr_seed_random/
 src/ERP/reporting_results/phase_I_results
+src/ERP/erp_src/erp_modules/sales/pre_sales_orders_item_i.py
 
 
 # Byte-compiled / optimized / DLL files

@@ -48,7 +48,7 @@ class ProductMix():
             product_mix_weights = run_sql_get(sql, params)
         return product_mix_weights
     
-    def gen_weights_until(self, fiscal_year:int, fiscal_month:int):
+    def gen_weights_until(self, fiscal_year:int, fiscal_month:int)->tuple:
         """If cannot find product_mix related weight in current year, month, 
         query the latest (year, month) and generated related mix based on previous (fiscal_year, fiscal_month)"""
         sql = """select fiscal_year, fiscal_month
@@ -66,7 +66,7 @@ class ProductMix():
             prev_weights = self.gen_next_month_weights(prev_weights, cur_year, cur_month)
 
     
-    def gen_next_month_weights(self, prev_weights, cur_year, cur_month):
+    def gen_next_month_weights(self, prev_weights:tuple, cur_year:int, cur_month:int):
         """Generate product_mix new weight from old weights in a random uniformed range from config file"""
         low = conf.product_mix_random_mult_lower
         high = conf.product_mix_random_mult_higher
